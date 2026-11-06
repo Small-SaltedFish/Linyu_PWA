@@ -273,8 +273,9 @@ export function ShowerPage() {
     autoModeRef.current = false
     setLookActive(false)
     showToast('检测到拿起手机，已结束用水', 'success')
-    if (phaseRef.current === 'running') await finish()
-    else navigate('/', { replace: true })
+    // 水已经关掉（paused）时也要走 finish()，这样会汇总本次所有账单并弹结算页，
+    // 不能直接 navigate('/')。
+    await finish()
   }
 
   const armLookGrace = () => {
