@@ -1,5 +1,4 @@
 import {
-  BarChart3,
   Building2,
   ChevronRight,
   Download,
@@ -38,7 +37,6 @@ export function ProfilePage() {
   const auth = useAppStore((state) => state.auth)
   const settings = useAppStore((state) => state.settings)
   const setTheme = useAppStore((state) => state.setTheme)
-  const setSetting = useAppStore((state) => state.setSetting)
   const logout = useAppStore((state) => state.logout)
   const showToast = useUiStore((state) => state.showToast)
   const { canInstall, installed, install, isIos } = useInstallPrompt()
@@ -221,24 +219,6 @@ export function ProfilePage() {
               {item.label}
             </button>
           ))}
-        </div>
-        <div className="settings-row">
-          <span className="settings-row__icon settings-row__icon--violet">
-            <BarChart3 size={19} />
-          </span>
-          <span className="settings-row__copy">
-            <strong>匿名使用统计</strong>
-            <small>仅事件、项目和粗粒度地区，不含账号密码</small>
-          </span>
-          <button
-            className={`switch ${settings.analytics !== false ? 'is-on' : ''}`}
-            role="switch"
-            aria-checked={settings.analytics !== false}
-            aria-label="匿名使用统计"
-            onClick={() => setSetting('analytics', settings.analytics === false)}
-          >
-            <span />
-          </button>
         </div>
       </section>
 

@@ -46,7 +46,7 @@ docker compose up -d --build
 - 粗粒度地区（Cloudflare 头，可选）
 - 时间、时长
 
-**不接收**手机号、accountId、loginCode、密码、设备 MAC、订单号、精确 GPS。前端「我的」可关闭匿名统计。
+**不接收**手机号、accountId、loginCode、密码、设备 MAC、订单号、精确 GPS。匿名统计固定开启。
 
 详细说明见 [`server/README.md`](server/README.md)。
 

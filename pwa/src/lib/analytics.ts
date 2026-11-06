@@ -44,15 +44,10 @@ function installId(): string {
 }
 
 function enabled(): boolean {
-  if (!BASE) return false
-  return useAppStore.getState().settings.analytics !== false
+  return Boolean(BASE)
 }
 
 function flush(keepalive = false) {
-  if (!enabled()) {
-    queue = []
-    return
-  }
   if (!BASE || queue.length === 0) return
   const batch = queue.slice(0, 50)
   queue = queue.slice(batch.length)

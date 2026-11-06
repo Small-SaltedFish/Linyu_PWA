@@ -291,7 +291,7 @@ export const useAppStore = create<AppState>()(
         lastDevice: demoDevices[0] ?? null,
         activeOrder: null,
         bills: demoBills,
-        settings: { theme: 'system', motionHints: true, flipToStop: false, analytics: true },
+        settings: { theme: 'system', motionHints: true, flipToStop: false },
         loading: false,
         sessionChecked: false,
         sessionError: null,

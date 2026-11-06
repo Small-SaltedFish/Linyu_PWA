@@ -34,7 +34,7 @@ VITE_STATS_URL=https://stats.example.com
 
 然后重新构建 PWA；也可以部署后直接修改 `dist/runtime-config.js` 里的 `window.__LINYU_STATS_URL__`，无需重新构建。统计页在 `https://stats.example.com/stats`。
 
-前端默认开启匿名统计，可在「我的 → 匿名使用统计」关闭。
+前端固定开启匿名统计，不提供关闭开关。
 
 ## API
 

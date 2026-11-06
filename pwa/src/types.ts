@@ -55,7 +55,6 @@ export interface ActiveOrder {
 export interface Settings {
   theme: ThemeMode
   motionHints: boolean
-  analytics: boolean
   /** 翻转停水：默认开启；旧持久化数据没有这个字段按开启处理 */
   flipToStop?: boolean
 }
