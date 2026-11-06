@@ -7,7 +7,6 @@ let updateSW: UpdateSW | null = null
 let registrationRef: ServiceWorkerRegistration | null = null
 let pending = false
 let checking = false
-let applyTimer = 0
 
 function canApplyNow(): boolean {
   const state = useAppStore.getState()
@@ -17,32 +16,12 @@ function canApplyNow(): boolean {
   return true
 }
 
-function applyIfSafe() {
-  if (!pending || !updateSW || !canApplyNow()) return
-  pending = false
-  if (applyTimer) {
-    window.clearInterval(applyTimer)
-    applyTimer = 0
-  }
-  void updateSW(true)
-}
-
-/** 只有存在待应用更新时才轮询“是否安全刷新”，不重复请求在线版本 */
-function scheduleApply() {
-  if (applyTimer) return
-  applyTimer = window.setInterval(() => {
-    if (!pending) {
-      window.clearInterval(applyTimer)
-      applyTimer = 0
-      return
-    }
-    applyIfSafe()
-  }, 5000)
-}
-
 /**
- * 在线版本检测：只在 PWA 打开时检查一次。
- * 发现新版本后立刻 skipWaiting + reload；用水/洗澡中延后到安全时。
+ * 只做版本检测，不自动刷新。
+ *
+ * 之前 autoUpdate + 自定义 updateSW(true) 会在某些浏览器里反复 reload，
+ * 最终出现 load failed。现在改为 prompt 模式：检测到新版本只记录 pending，
+ * 由调试页手动应用，避免自动刷新循环。
  */
 export function setupPwaUpdates() {
   if (typeof window === 'undefined' || !('serviceWorker' in navigator)) return
@@ -51,18 +30,17 @@ export function setupPwaUpdates() {
     immediate: true,
     onNeedRefresh() {
       pending = true
-      scheduleApply()
-      applyIfSafe()
     },
     onRegisteredSW(_url, registration) {
       if (!registration) return
       registrationRef = registration
+      // 每次打开 PWA 只检查一次
       void checkForUpdateNow()
     },
   })
 }
 
-/** 调试页手动检查；返回是否发现新版本 */
+/** 手动检查；只返回是否有新版本，不自动刷新 */
 export async function checkForUpdateNow(): Promise<boolean> {
   const registration = registrationRef
   if (!registration) return false
@@ -72,8 +50,6 @@ export async function checkForUpdateNow(): Promise<boolean> {
     await registration.update()
     if (registration.waiting) {
       pending = true
-      scheduleApply()
-      applyIfSafe()
       return true
     }
     return false
@@ -82,4 +58,12 @@ export async function checkForUpdateNow(): Promise<boolean> {
   } finally {
     checking = false
   }
+}
+
+/** 用户在调试页确认后应用更新；只允许在安全页面执行 */
+export async function applyPendingUpdate(): Promise<boolean> {
+  if (!pending || !updateSW || !canApplyNow()) return false
+  pending = false
+  await updateSW(true)
+  return true
 }

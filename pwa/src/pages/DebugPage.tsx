@@ -1,7 +1,7 @@
 import { ArrowLeft, Bug, Compass, FlaskConical, RefreshCw, RotateCcw } from 'lucide-react'
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { checkForUpdateNow } from '../lib/pwaUpdates'
+import { applyPendingUpdate, checkForUpdateNow } from '../lib/pwaUpdates'
 import { useAppStore } from '../store/useAppStore'
 import { useUiStore } from '../store/useUiStore'
 
@@ -21,7 +21,16 @@ export function DebugPage() {
     setChecking(true)
     try {
       const found = await checkForUpdateNow()
-      showToast(found ? '发现新版本，准备刷新' : '当前已是最新版本', found ? 'success' : 'default')
+      if (!found) {
+        showToast('当前已是最新版本', 'default')
+        return
+      }
+      const applied = await applyPendingUpdate()
+      if (!applied) {
+        showToast('发现新版本，但当前有进行中用水，请结束后再更新', 'danger')
+        return
+      }
+      showToast('正在应用更新…', 'success')
     } catch {
       showToast('检查更新失败，请稍后再试', 'danger')
     } finally {
