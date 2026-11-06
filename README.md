@@ -26,7 +26,7 @@ VITE_STATS_URL=https://stats.example.com
 ```
 
 - 真实 API 直连，不反代。
-- 更新检测只在打开时执行，发现新版本在 `/#/debug` 手动应用（避免自动 reload 循环）。
+- 更新检测只在打开时执行；发现新版本自动应用，但 5 分钟内最多自动 reload 一次，避免刷新循环；也可在 `/#/debug` 手动应用。
 - `VITE_STATS_URL` 留空则完全不上报统计；部署后也可修改 `dist/runtime-config.js` 的 `window.__LINYU_STATS_URL__`。
 - 演示模式只放在 `/#/debug`，不在正常导航显示。
 
