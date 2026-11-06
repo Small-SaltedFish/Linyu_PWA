@@ -5,6 +5,8 @@
 ## 运行
 
 ```bash
+cp .env.example .env
+# 编辑 .env：至少改 STATS_TOKEN / ALLOWED_ORIGINS
 docker compose up -d --build
 ```
 

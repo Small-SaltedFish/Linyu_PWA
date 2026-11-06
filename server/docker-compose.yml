@@ -8,8 +8,8 @@ services:
     environment:
       DB_PATH: /data/stats.db
       PORT: "8080"
-      ALLOWED_ORIGINS: "*"
-      STATS_TOKEN: ""
+      ALLOWED_ORIGINS: ${ALLOWED_ORIGINS:-*}
+      STATS_TOKEN: ${STATS_TOKEN:-}
     volumes:
       - stats-data:/data
 volumes:
