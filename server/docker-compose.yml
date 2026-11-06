@@ -1,0 +1,16 @@
+services:
+  stats:
+    build: .
+    image: linyu-pwa-stats:latest
+    restart: unless-stopped
+    ports:
+      - "8787:8080"
+    environment:
+      DB_PATH: /data/stats.db
+      PORT: "8080"
+      ALLOWED_ORIGINS: "*"
+      STATS_TOKEN: ""
+    volumes:
+      - stats-data:/data
+volumes:
+  stats-data:

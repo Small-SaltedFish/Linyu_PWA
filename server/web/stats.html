@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>淋浴 · 使用统计</title>
+    <link rel="stylesheet" href="/static/stats.css" />
+  </head>
+  <body>
+    <main class="shell">
+      <header class="top">
+        <div>
+          <span class="eyebrow">LINYU PWA · STATS</span>
+          <h1>使用统计</h1>
+          <p class="sub">匿名事件统计，不包含手机号、账号、密码、设备 MAC 或订单号。</p>
+        </div>
+        <div class="ranges" role="tablist" aria-label="统计范围">
+          <button data-days="7" class="is-active">近 7 天</button>
+          <button data-days="30">近 30 天</button>
+          <button data-days="90">近 90 天</button>
+        </div>
+      </header>
+
+      <div id="token-box" class="token-box hidden">
+        <input id="token" type="password" placeholder="STATS_TOKEN" autocomplete="off" />
+        <button id="token-save">保存 Token</button>
+      </div>
+
+      <section id="error" class="error hidden"></section>
+
+      <section class="cards">
+        <article><span>打开次数</span><strong id="m-open">—</strong><small>app_open</small></article>
+        <article><span>独立设备</span><strong id="m-installs">—</strong><small>匿名 installId</small></article>
+        <article><span>用水次数</span><strong id="m-start">—</strong><small>water_start</small></article>
+        <article><span>扫码成功</span><strong id="m-scan">—</strong><small>scan_success</small></article>
+        <article><span>累计用水</span><strong id="m-duration">—</strong><small>water_end 时长</small></article>
+        <article><span>安装次数</span><strong id="m-install">—</strong><small>install</small></article>
+        <article><span>暂停 / 继续</span><strong id="m-pause">—</strong><small>pause / resume</small></article>
+        <article><span>总事件</span><strong id="m-total">—</strong><small>所选范围</small></article>
+      </section>
+
+      <section class="panel">
+        <div class="panel-head">
+          <h2>每日活跃</h2>
+          <span id="updated" class="muted"></span>
+        </div>
+        <div id="chart" class="chart"></div>
+        <div class="legend"><span class="dot events"></span>事件<span class="dot installs"></span>独立设备</div>
+      </section>
+
+      <div class="grid">
+        <section class="panel">
+          <div class="panel-head"><h2>项目分布</h2></div>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>项目</th><th>事件</th><th>设备</th><th>开水</th></tr></thead>
+              <tbody id="projects"></tbody>
+            </table>
+          </div>
+        </section>
+        <section class="panel">
+          <div class="panel-head"><h2>地区分布</h2></div>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>国家 / 地区 / 城市</th><th>事件</th><th>设备</th></tr></thead>
+              <tbody id="regions"></tbody>
+            </table>
+          </div>
+        </section>
+      </div>
+
+      <footer>
+        Linyu_PWA stats · <span id="since"></span> 起 · 只保存匿名 installId、项目、粗粒度地区、事件和时间
+      </footer>
+    </main>
+    <script src="/static/stats.js"></script>
+  </body>
+</html>

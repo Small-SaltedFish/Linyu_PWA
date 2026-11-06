@@ -1,0 +1,63 @@
+# 淋浴 No-Ads · Nginx 示例（1Panel 站点配置）
+#
+# 构建前：
+#   VITE_API_BASE_URL=https://v3-api.china-qzxy.cn      # 直连 API（当前策略，不反代）
+#
+# 说明：
+# - HashRouter 不需要 SPA rewrite；try_files 只是兜底。
+# - API 直连，不经本服务器；不要加 /api 反代（会改变源 IP）。
+# - 证书路径/站点根目录按 1Panel 实际值改。
+
+server {
+    listen 80;
+    server_name linyu.example.com;
+
+    # 1Panel 申请证书后通常会自动生成跳转；没有就保留这段
+    return 301 https://$host$request_uri;
+}
+
+server {
+    listen 443 ssl http2;
+    server_name linyu.example.com;
+
+    ssl_certificate     /opt/1panel/apps/openresty/openresty/conf/ssl/linyu.example.com/fullchain.pem;
+    ssl_certificate_key /opt/1panel/apps/openresty/openresty/conf/ssl/linyu.example.com/privkey.pem;
+    ssl_protocols TLSv1.2 TLSv1.3;
+
+    root  /opt/1panel/apps/openresty/openresty/www/sites/linyu/index;
+    index index.html;
+
+    # 静态资源
+    location / {
+        try_files $uri $uri/ /index.html;
+    }
+
+    # 入口和 Service Worker 不缓存，保证发版立即生效
+    location = /index.html {
+        add_header Cache-Control "no-cache";
+    }
+    location = /sw.js {
+        add_header Cache-Control "no-cache";
+    }
+    location = /manifest.webmanifest {
+        default_type application/manifest+json;
+        add_header Cache-Control "no-cache";
+    }
+
+    # 带 hash 的构建产物，长期缓存
+    location /assets/ {
+        add_header Cache-Control "public, max-age=31536000, immutable";
+    }
+
+    # API 不反代：浏览器直连 https://v3-api.china-qzxy.cn
+    # 反代会改变服务端看到的源 IP，可能影响 IP/会话校验；当前策略是直连。
+
+    # 安全头（按需；CSP 先用 report-only 观察）
+    add_header X-Content-Type-Options "nosniff" always;
+    add_header Referrer-Policy "strict-origin-when-cross-origin" always;
+    add_header Permissions-Policy "camera=(self), screen-wake-lock=(self), geolocation=()" always;
+    # add_header Content-Security-Policy "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self' https://v3-api.china-qzxy.cn; media-src 'self' blob:; worker-src 'self' blob:; manifest-src 'self'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'" always;
+
+    gzip on;
+    gzip_types text/css application/javascript application/json image/svg+xml application/manifest+json;
+}
