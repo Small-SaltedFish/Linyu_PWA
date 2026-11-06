@@ -73,9 +73,12 @@ export function ShowerPage() {
   // 暂停时 activeOrder 已清空，但自动模式仍需要屏幕常亮，否则息屏会直接退出自动模式
   const wakeLock = useWakeLock(Boolean(activeOrder) || phase !== 'running')
   const [pausedDevice, setPausedDevice] = useState<Device | null>(null)
-  const [autoMode, setAutoMode] = useState(
+  // 从扫码页手动开阀进来的自动模式：允许第一次“已经扣下”直接暂停。
+  // 这样在 downRate 的几秒等待期间用户提前翻扣，页面挂载后也能立即响应。
+  const [freshAutoStart] = useState(
     () => Boolean(activeOrder) && peekAutoFlipOnStart(),
   )
+  const [autoMode, setAutoMode] = useState(freshAutoStart)
   const [cooldownUntil, setCooldownUntil] = useState(0)
   const [cooldownTick, setCooldownTick] = useState(0)
   const [lookActive, setLookActive] = useState(false)
@@ -352,6 +355,10 @@ export function ShowerPage() {
     // 路由切换后如果 AudioContext 被挂起，进页面时再尝试唤醒一次
     primeSounds()
   }, [])
+
+  useEffect(() => {
+    if (freshAutoStart && autoMode) armedRef.current = true
+  }, [freshAutoStart, autoMode])
 
   useEffect(() => {
     if (autoMode && flip.permission === 'ready') armLookGrace()
