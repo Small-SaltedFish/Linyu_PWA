@@ -167,7 +167,7 @@ export function RecordsPage() {
           ))}
         </div>
         <p className="trend-card__caption">
-          仅统计热水表；{mode === 'live' ? '金额以趣智校园账单为准' : '当前为演示数据'}
+          仅统计热水表；金额以趣智校园账单为准
         </p>
       </section>
 
@@ -261,7 +261,7 @@ export function RecordsPage() {
             <p className="notice">
               {mode === 'live'
                 ? '金额以趣智校园服务端账单为准。'
-                : '金额以趣智校园服务端账单为准，本页为演示数据。'}
+                : '金额以趣智校园服务端账单为准。'}
             </p>
           </div>
         )}

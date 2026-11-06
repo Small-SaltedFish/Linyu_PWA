@@ -61,7 +61,7 @@ export function ProfilePage() {
 
   const openPasswordSheet = () => {
     if (mode !== 'live' || !auth) {
-      showToast('演示模式不支持修改密码', 'danger')
+      showToast('当前模式不支持修改密码', 'danger')
       return
     }
     setPasswordMode('old')
@@ -166,9 +166,9 @@ export function ProfilePage() {
           </span>
           <span className="settings-row__copy">
             <strong>当前项目</strong>
-            <small>{currentProjectName || (mode === 'live' ? '未选择' : '演示项目')}</small>
+            <small>{currentProjectName || '未选择'}</small>
           </span>
-          <span className="tag tag--muted">{mode === 'live' ? '实时' : '演示'}</span>
+          {mode === 'live' && <span className="tag tag--muted">实时</span>}
         </div>
         <button className="settings-row" onClick={openPasswordSheet}>
           <span className="settings-row__icon">
@@ -374,7 +374,7 @@ export function ProfilePage() {
 
       <Sheet open={logoutOpen} onClose={() => setLogoutOpen(false)} title="退出登录？">
         <div className="confirm-stack">
-          <p>退出后需要重新登录才能使用扫码和开关水。当前演示数据不会上传。</p>
+          <p>退出后需要重新登录才能使用扫码和开关水。本地登录信息会被清除。</p>
           <div className="sheet-actions">
             <button className="ghost-button" onClick={() => setLogoutOpen(false)}>
               取消

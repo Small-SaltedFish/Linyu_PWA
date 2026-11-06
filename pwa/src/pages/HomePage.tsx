@@ -325,10 +325,11 @@ export function HomePage() {
         </div>
       </section>
 
-      <p className="page-footnote">
-        <Sparkles size={13} />{' '}
-        {mode === 'live' ? '数据来自趣智校园接口' : '当前为演示环境'}
-      </p>
+      {mode === 'live' && (
+        <p className="page-footnote">
+          <Sparkles size={13} /> 数据来自趣智校园接口
+        </p>
+      )}
 
       {projectOpen &&
         createPortal(

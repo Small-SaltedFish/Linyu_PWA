@@ -80,7 +80,7 @@ export function ScanPage() {
           detectedRef.current = false
           cooldownUntilRef.current = Date.now() + 1000
           showToast(
-            mode === 'live' ? '没有查到设备' : `识别到 ${address}，演示数据里没有这台设备`,
+            mode === 'live' ? '没有查到设备' : `没有找到 ${address} 对应的设备`,
             'danger',
           )
           return
@@ -242,7 +242,7 @@ export function ScanPage() {
     }
     const device = findDemoDevice(mac)
     if (!device) {
-      showToast('演示数据里没有这台设备', 'danger')
+      showToast('没有找到这台设备', 'danger')
       return
     }
     setPending(device)
@@ -386,7 +386,7 @@ export function ScanPage() {
           </div>
         ) : (
           <div className="scan-demo">
-            <span>没有实体码？试试演示设备</span>
+            <span>没有实体码？试试示例设备</span>
             <div>
               {demoDevices.map((device) => (
                 <button key={device.id} onClick={() => setPending(device)}>
@@ -446,7 +446,7 @@ export function ScanPage() {
             </dl>
             {pending.kind === 'dryer' && (
               <p className="notice">
-                吹风机按固定时长计费；提前结束是否退费以服务端为准，当前演示按全额计。
+                吹风机按固定时长计费；提前结束是否退费以服务端为准，当前示例按全额计。
               </p>
             )}
             {pending.online === false && (
