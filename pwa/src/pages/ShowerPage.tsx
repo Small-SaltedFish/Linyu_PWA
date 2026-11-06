@@ -73,12 +73,9 @@ export function ShowerPage() {
   // 暂停时 activeOrder 已清空，但自动模式仍需要屏幕常亮，否则息屏会直接退出自动模式
   const wakeLock = useWakeLock(Boolean(activeOrder) || phase !== 'running')
   const [pausedDevice, setPausedDevice] = useState<Device | null>(null)
-  // 从扫码页手动开阀进来的自动模式：允许第一次“已经扣下”直接暂停。
-  // 这样在 downRate 的几秒等待期间用户提前翻扣，页面挂载后也能立即响应。
-  const [freshAutoStart] = useState(
+  const [autoMode, setAutoMode] = useState(
     () => Boolean(activeOrder) && peekAutoFlipOnStart(),
   )
-  const [autoMode, setAutoMode] = useState(freshAutoStart)
   const [cooldownUntil, setCooldownUntil] = useState(0)
   const [cooldownTick, setCooldownTick] = useState(0)
   const [lookActive, setLookActive] = useState(false)
@@ -104,7 +101,6 @@ export function ShowerPage() {
   const phaseRef = useRef<Phase>('running')
   const cooldownRef = useRef(0)
   const pausedDeviceRef = useRef<Device | null>(null)
-  const armedRef = useRef(false)
   const lookGraceSetRef = useRef(false)
   const lastLookTickRef = useRef(0)
   const actionsRef = useRef({
@@ -185,7 +181,7 @@ export function ShowerPage() {
   /** 翻扣下：暂停（closeOrder + 结算），失败重试 3 次 */
   const pauseByFlip = async () => {
     if (!autoModeRef.current || phaseRef.current !== 'running') return
-    if (Date.now() < cooldownRef.current || !armedRef.current) return
+    if (Date.now() < cooldownRef.current) return
     const order = useAppStore.getState().activeOrder
     if (!order) return
 
@@ -301,7 +297,6 @@ export function ShowerPage() {
       return
     }
     markMotionPermissionGranted()
-    armedRef.current = false
     armLookGrace()
   }
 
@@ -331,7 +326,6 @@ export function ShowerPage() {
     markMotionPermissionGranted()
     setAutoMode(true)
     autoModeRef.current = true
-    armedRef.current = false
     armLookGrace()
     showToast('自动模式已开启', 'success')
   }
@@ -357,10 +351,6 @@ export function ShowerPage() {
   }, [])
 
   useEffect(() => {
-    if (freshAutoStart && autoMode) armedRef.current = true
-  }, [freshAutoStart, autoMode])
-
-  useEffect(() => {
     if (autoMode && flip.permission === 'ready') armLookGrace()
     // armLookGrace uses a ref guard; only the first enable starts the 15s grace
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -373,8 +363,7 @@ export function ShowerPage() {
         setAutoMode(false)
         autoModeRef.current = false
         setLookActive(false)
-        armedRef.current = false
-        resetFlipZones()
+            resetFlipZones()
       }
     }
     document.addEventListener('visibilitychange', onHidden)
@@ -421,16 +410,15 @@ export function ShowerPage() {
   // 姿态动作：扣下暂停、正面平放继续；冷却中不响应
   useEffect(() => {
     if (!autoMode) return
-    if (flip.hasStable && flip.zone !== 'faceDown') armedRef.current = true
     if (phase === 'closing' || phase === 'opening' || stopping) return
     if (Date.now() < cooldownUntil) return
 
-    if (phase === 'running' && flip.zone === 'faceDown' && armedRef.current) {
+    if (phase === 'running' && flip.zone === 'faceDown') {
       actionsRef.current.pause()
     } else if (phase === 'paused' && flip.zone === 'faceUp') {
       actionsRef.current.resume()
     }
-  }, [autoMode, flip.zone, flip.hasStable, phase, cooldownUntil, cooldownTick, stopping])
+  }, [autoMode, flip.zone, phase, cooldownUntil, cooldownTick, stopping])
 
   // 15 秒保护结束后重新评估
   useEffect(() => {
