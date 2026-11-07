@@ -50,6 +50,15 @@ export function useInstallPrompt() {
     return choice.outcome === 'accepted'
   }
 
-  const isIos = /iphone|ipad|ipod/i.test(navigator.userAgent)
-  return { canInstall: Boolean(promptEvent), installed, install, isIos }
+  const ua = navigator.userAgent
+  const isIos =
+    /iphone|ipad|ipod/i.test(ua) ||
+    (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1)
+  // iOS 上的 Chrome / Edge / Firefox / 微信内置浏览器都不能真正安装 PWA；
+  // 只有 Safari 的「添加到主屏幕」会创建独立 Web App。
+  const isSafari =
+    isIos &&
+    /Safari/i.test(ua) &&
+    !/(CriOS|FxiOS|EdgiOS|OPiOS|GSA|DuckDuckGo|MicroMessenger|FBAN|FBAV|Instagram)/i.test(ua)
+  return { canInstall: Boolean(promptEvent), installed, install, isIos, isSafari }
 }
