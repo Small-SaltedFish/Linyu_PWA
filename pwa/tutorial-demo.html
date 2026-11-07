@@ -375,15 +375,13 @@
         z-index: 2;
         width: 178px;
         height: 348px;
-        border: 2px solid #4a5674;
-        border-bottom: 7px solid #202b43;
+        border: 2px solid #3b4764;
         border-radius: 30px;
         background: var(--phone);
         box-shadow:
           0 34px 60px rgba(0, 0, 0, 0.5),
-          0 8px 0 -1px #111a2b,
-          0 10px 0 -1px #35415f,
-          0 0 0 1px rgba(255, 255, 255, 0.04) inset;
+          0 2px 0 rgba(255, 255, 255, 0.06) inset,
+          0 0 0 1px rgba(255, 255, 255, 0.04);
         transform-style: preserve-3d;
         transform: rotateX(0deg) rotateZ(0deg) scale(0.92);
         transition: transform 0.85s cubic-bezier(0.22, 0.9, 0.24, 1), box-shadow 0.85s ease;
@@ -438,10 +436,10 @@
 
       .camera-plateau {
         position: absolute;
-        top: 10px;
+        top: 9px;
         left: 10px;
         right: 10px;
-        height: 76px;
+        height: 82px;
         border: 1px solid rgba(255, 255, 255, 0.07);
         border-radius: 23px;
         background:
@@ -454,17 +452,17 @@
 
       .camera-lenses {
         position: absolute;
-        top: 18px;
-        left: 11px;
-        width: 102px;
-        height: 38px;
+        top: 9px;
+        left: 12px;
+        width: 78px;
+        height: 64px;
       }
 
       .lens {
         position: absolute;
         display: block;
-        width: 27px;
-        height: 27px;
+        width: 28px;
+        height: 28px;
         border-radius: 50%;
         background:
           radial-gradient(circle at 38% 31%, #5c6d9d 0 7%, #273555 8% 19%, #0a101c 20% 48%, #03060b 49% 100%);
@@ -489,8 +487,8 @@
       }
 
       .lens--one { top: 0; left: 0; }
-      .lens--two { top: 0; left: 34px; }
-      .lens--three { top: 0; left: 68px; }
+      .lens--two { bottom: 0; left: 0; }
+      .lens--three { top: 17px; left: 38px; }
 
       .camera-extras {
         position: absolute;
