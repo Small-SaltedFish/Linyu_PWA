@@ -2,8 +2,6 @@
 services:
   stats:
     image: ghcr.io/small-saltedfish/linyu-pwa-stats:1.0.0
-    # 或：
-    # image: small-saltedfish/linyu-pwa-stats:1.0.0
     restart: unless-stopped
     ports:
       - "8787:8080"

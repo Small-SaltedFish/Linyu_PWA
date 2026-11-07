@@ -114,19 +114,13 @@ docker compose up -d --build
 
 ### 从镜像启动
 
-镜像发布后（目前还未正式发布）：
+GitHub Release `v1.0.0` 发布后：
 
 ```bash
 docker pull ghcr.io/small-saltedfish/linyu-pwa-stats:1.0.0
 ```
 
-或 Docker Hub：
-
-```bash
-docker pull YOUR_DOCKERHUB_NAME/linyu-pwa-stats:1.0.0
-```
-
-`docker-compose.release.example.yml` 是固定镜像版本的示例。
+`server/docker-compose.release.example.yml` 是固定镜像版本的示例。
 
 ### 环境变量
 
@@ -177,9 +171,10 @@ https://stats.example.com → http://127.0.0.1:8787
 
 - Git tag：`v1.0.0`
 - 前端 Release 附件：只放构建产物 `linyu-pwa-web-v1.0.0.zip`
-- 后端镜像：GHCR / Docker Hub，标签 `1.0.0`、`1.0`，正式版可加 `latest`
+- 后端镜像：只发 GHCR，标签 `1.0.0`、`1.0`，正式版可加 `latest`
 - 后端镜像不打进 Release 附件，使用 registry 拉取
-- 不再额外放 SHA256 校验文件
+- 不额外放 SHA256 校验文件
+- workflow：`.github/workflows/release.yml`，只有推 `v*` tag 才触发
 
 每次发版同步更新：
 
