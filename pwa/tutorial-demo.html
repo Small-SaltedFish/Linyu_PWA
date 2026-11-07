@@ -112,6 +112,104 @@
         transform: rotate(-18deg) scaleY(0.64);
       }
 
+      .table {
+        position: absolute;
+        z-index: 1;
+        bottom: 25px;
+        width: 300px;
+        height: 130px;
+        border: 1px solid rgba(87, 182, 255, 0.1);
+        border-radius: 50%;
+        background:
+          radial-gradient(ellipse at 50% 38%, rgba(87, 182, 255, 0.15), transparent 62%),
+          linear-gradient(180deg, rgba(30, 43, 72, 0.48), rgba(14, 21, 36, 0.12));
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.24);
+        transform: rotateX(61deg);
+        transform-style: preserve-3d;
+      }
+
+      .table__grid {
+        position: absolute;
+        inset: 10px;
+        border-radius: 50%;
+        opacity: 0.4;
+        background-image:
+          linear-gradient(rgba(124, 140, 248, 0.16) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(124, 140, 248, 0.16) 1px, transparent 1px);
+        background-size: 26px 26px;
+        mask-image: radial-gradient(ellipse at center, #000 20%, transparent 70%);
+        -webkit-mask-image: radial-gradient(ellipse at center, #000 20%, transparent 70%);
+      }
+
+      .table__label {
+        position: absolute;
+        right: 20px;
+        bottom: 12px;
+        color: rgba(148, 161, 184, 0.5);
+        font-size: 8px;
+        letter-spacing: 0.12em;
+      }
+
+      .phone-shadow {
+        position: absolute;
+        z-index: 2;
+        bottom: 36px;
+        width: 168px;
+        height: 28px;
+        border-radius: 50%;
+        background: rgba(0, 0, 0, 0.46);
+        filter: blur(11px);
+        opacity: 0.48;
+        transition: transform 0.85s cubic-bezier(0.22, 0.9, 0.24, 1), opacity 0.85s ease;
+      }
+
+      .phone-shadow.is-scan { transform: translateY(-4px) scale(0.9); opacity: 0.35; }
+      .phone-shadow.is-facedown { transform: translateY(34px) scale(1.2); opacity: 0.55; }
+      .phone-shadow.is-faceup { transform: translateY(34px) scale(1.22); opacity: 0.55; }
+      .phone-shadow.is-vertical { transform: translateY(-8px) scale(0.8); opacity: 0.3; }
+
+      .angle-mark {
+        position: absolute;
+        z-index: 4;
+        right: 38px;
+        bottom: 164px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 2px;
+        color: var(--primary);
+        opacity: 0;
+        transform: translateX(6px);
+        transition: opacity 0.4s ease, transform 0.4s ease;
+      }
+
+      .stage.is-vertical .angle-mark {
+        opacity: 1;
+        transform: translateX(0);
+      }
+
+      .angle-mark i {
+        display: block;
+        width: 50px;
+        height: 42px;
+        border-top: 1px dashed rgba(124, 140, 248, 0.6);
+        border-right: 1px dashed rgba(124, 140, 248, 0.6);
+        border-radius: 0 20px 0 0;
+        transform: skewX(-18deg);
+      }
+
+      .angle-mark b {
+        font-size: 12px;
+        font-weight: 750;
+        letter-spacing: -0.03em;
+      }
+
+      .angle-mark small {
+        color: var(--muted);
+        font-size: 7px;
+        letter-spacing: 0.1em;
+      }
+
       .orbit::after {
         content: '';
         position: absolute;
@@ -141,17 +239,21 @@
         will-change: transform;
       }
 
-      .phone.is-upright {
-        transform: rotateX(0deg) rotateZ(0deg) scale(0.92);
+      .phone.is-scan {
+        transform: translateY(-24px) rotateX(-12deg) rotateZ(0deg) scale(0.9);
       }
 
       .phone.is-faceup {
-        transform: rotateX(67deg) rotateZ(0deg) scale(0.94);
-        box-shadow: 0 24px 48px rgba(0, 0, 0, 0.42);
+        transform: translateY(86px) rotateX(78deg) rotateZ(0deg) scale(0.86);
+        box-shadow: 0 20px 38px rgba(0, 0, 0, 0.38);
       }
 
       .phone.is-facedown {
-        transform: rotateX(180deg) rotateZ(0deg) scale(0.92);
+        transform: translateY(86px) rotateX(258deg) rotateZ(0deg) scale(0.86);
+      }
+
+      .phone.is-vertical {
+        transform: translateY(-42px) rotateX(0deg) rotateZ(0deg) scale(0.88);
       }
 
       .phone__front,
@@ -372,6 +474,55 @@
         font-size: 8px;
       }
 
+      .scan-layer {
+        position: absolute;
+        z-index: 3;
+        inset: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 13px;
+        border-radius: 22px;
+        background: rgba(8, 13, 24, 0.42);
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.3s ease;
+      }
+
+      .phone.is-scan .scan-layer {
+        opacity: 1;
+      }
+
+      .scan-frame {
+        width: 76px;
+        height: 76px;
+        border: 1px solid rgba(124, 140, 248, 0.8);
+        border-radius: 16px;
+        box-shadow: 0 0 0 5px rgba(124, 140, 248, 0.08), 0 0 24px rgba(124, 140, 248, 0.18);
+      }
+
+      .scan-line {
+        position: absolute;
+        top: 50%;
+        width: 66px;
+        height: 1px;
+        background: linear-gradient(90deg, transparent, #9aa7ff, transparent);
+        box-shadow: 0 0 10px rgba(154, 167, 255, 0.9);
+        animation: scan 1.8s ease-in-out infinite;
+      }
+
+      .scan-copy {
+        color: #c7ceff;
+        font-size: 8px;
+        letter-spacing: 0.08em;
+      }
+
+      @keyframes scan {
+        0%, 100% { transform: translateY(-30px); opacity: 0.2; }
+        50% { transform: translateY(30px); opacity: 1; }
+      }
+
       .screen__finish {
         position: absolute;
         z-index: 3;
@@ -458,6 +609,13 @@
         line-height: 1.55;
       }
 
+      .caption-card .caption-note {
+        margin-top: 6px;
+        color: rgba(199, 206, 255, 0.76);
+        font-size: 9px;
+        line-height: 1.6;
+      }
+
       .steps {
         display: flex;
         align-items: center;
@@ -521,12 +679,20 @@
   <body>
     <main class="demo">
       <span class="eyebrow"><i></i> 自动控水 · 30 秒学会</span>
-      <h1>手机扣下暂停，翻回继续</h1>
-      <p class="lead">不用找按钮。自动模式下，手机的朝向就是你的开关。</p>
+      <h1>手机会自己判断姿态</h1>
+      <p class="lead">自动模式通过检测手机朝向工作：屏幕朝下暂停，朝上继续，竖直 3 秒结束。</p>
 
-      <div class="stage">
+      <div class="stage" id="stage">
         <span class="orbit"></span>
-        <div class="phone is-upright" id="phone">
+        <div class="table" aria-hidden="true">
+          <span class="table__grid"></span>
+          <span class="table__label">桌面</span>
+        </div>
+        <span class="phone-shadow" id="shadow" aria-hidden="true"></span>
+        <span class="angle-mark" id="angleMark" aria-hidden="true">
+          <i></i><b>90°</b><small>与地面</small>
+        </span>
+        <div class="phone is-scan" id="phone">
           <div class="phone__front">
             <div class="screen">
               <div class="screen__top">
@@ -547,6 +713,11 @@
                 <div class="amount"><small>¥</small><span id="amountText">0.18</span></div>
                 <div class="phone-hint" id="phoneHint">保持竖立，水正常流动</div>
               </div>
+              <div class="scan-layer">
+                <span class="scan-frame"></span>
+                <span class="scan-line"></span>
+                <span class="scan-copy">正在扫码</span>
+              </div>
               <div class="screen__finish">
                 <span class="finish-icon">✓</span>
                 <strong>本次用水已结束</strong>
@@ -564,8 +735,9 @@
 
       <section class="caption-card">
         <div class="caption-card__top"><span class="step-index" id="stepNo">1</span><span id="stepTag">正常用水</span></div>
-        <h2 id="captionTitle">手机竖起</h2>
-        <p id="captionText">保持竖立，水正常流动。翻转手机前，先记住这个状态。</p>
+        <h2 id="captionTitle">扫码开始用水</h2>
+        <p id="captionText">扫码开始用水，并打开自动模式。接下来不用再点按钮。</p>
+        <p class="caption-note" id="captionNote"></p>
       </section>
 
       <div class="steps" id="steps" aria-hidden="true">
@@ -585,48 +757,51 @@
       const stepTag = document.getElementById('stepTag')
       const captionTitle = document.getElementById('captionTitle')
       const captionText = document.getElementById('captionText')
+      const captionNote = document.getElementById('captionNote')
+      const shadow = document.getElementById('shadow')
+      const stage = document.getElementById('stage')
       const steps = [...document.querySelectorAll('#steps span')]
 
       const states = [
         {
-          key: 'upright',
-          tag: '正常用水',
-          title: '手机竖起',
-          text: '保持竖立，水正常流动。翻转手机前，先记住这个状态。',
-          hint: '保持竖立，水正常流动',
+          key: 'scan',
+          tag: '开始用水',
+          title: '扫码并打开自动模式',
+          text: '扫码开始用水，并打开自动模式。接下来不用再点按钮。',
+          hint: '自动模式已开启',
           paused: false,
           finished: false,
-          delay: 1800,
+          delay: 1900,
         },
         {
           key: 'faceDown',
-          tag: '自动暂停',
-          title: '扣下手机',
-          text: '屏幕朝下扣在桌上，水会自动暂停，不用再找按钮。',
+          tag: '屏幕朝下',
+          title: '扣在桌上',
+          text: '屏幕朝下，扣在桌面上，水会自动暂停。',
           hint: '扣下后已暂停',
           paused: true,
           finished: false,
-          delay: 2400,
+          delay: 2300,
         },
         {
           key: 'faceUp',
-          tag: '自动继续',
-          title: '正面朝上平放',
-          text: '把手机翻回来、屏幕朝上平放，水会自动继续。',
+          tag: '屏幕朝上',
+          title: '正面平放',
+          text: '屏幕朝上，平放在同一个桌面，水会自动继续。',
           hint: '翻回正面，继续用水',
           paused: false,
           finished: false,
-          delay: 2400,
+          delay: 2300,
         },
         {
-          key: 'upright',
-          tag: '结束用水',
-          title: '竖直拿起 3 秒',
-          text: '水用完后，把手机竖直拿起保持约 3 秒，自动结束并弹出本次汇总。',
-          hint: '已结束，查看结算',
+          key: 'vertical',
+          tag: '90° 竖直',
+          title: '与地面成 90°',
+          text: '把手机竖直拿起，与地面成 90°，保持约 3 秒，自动结束用水。',
+          hint: '保持 3 秒，准备结束',
           paused: false,
-          finished: true,
-          delay: 3200,
+          finished: false,
+          delay: 3000,
         },
       ]
 
@@ -635,21 +810,33 @@
 
       function render(state) {
         phone.className = `phone is-${state.key.toLowerCase()}${state.paused ? ' is-paused' : ''}${state.finished ? ' is-finished' : ''}`
-        statusText.textContent = state.finished ? '已结束' : state.paused ? '已暂停' : '正在用水'
+        shadow.className = `phone-shadow is-${state.key.toLowerCase()}`
+        stage.classList.toggle('is-vertical', state.key === 'vertical')
+        statusText.textContent = state.finished ? '已结束' : state.paused ? '已暂停' : state.key === 'vertical' ? '检测中' : '正在用水'
         backStatus.textContent = state.paused ? '已暂停' : '正在用水'
         phoneHint.textContent = state.hint
         stepNo.textContent = String(index + 1)
         stepTag.textContent = state.tag
         captionTitle.textContent = state.title
         captionText.textContent = state.text
+        captionNote.textContent = state.key === 'vertical' ? '点击按钮和长按空白处 5 秒也可停止。' : ''
         steps.forEach((dot, i) => dot.classList.toggle('active', i === index))
+      }
+
+      function finishVertical() {
+        phone.classList.add('is-finished')
+        statusText.textContent = '已结束'
+        phoneHint.textContent = '已结束，查看结算'
       }
 
       function playNext() {
         render(states[index])
         const state = states[index]
         timer = window.setTimeout(() => {
-          if (index === states.length - 1) return
+          if (index === states.length - 1) {
+            finishVertical()
+            return
+          }
           index += 1
           playNext()
         }, state.delay)
@@ -657,6 +844,7 @@
 
       function start() {
         window.clearTimeout(timer)
+        phone.classList.remove('is-finished')
         index = 0
         playNext()
       }
@@ -670,9 +858,11 @@
       }
 
       window.setTutorialState = setState
+      window.finishTutorial = finishVertical
       window.setTutorialStep = (next) => {
         window.clearTimeout(timer)
         index = Math.max(0, Math.min(states.length - 1, Number(next) || 0))
+        phone.classList.remove('is-finished')
         render(states[index])
       }
       document.getElementById('replay').addEventListener('click', start)
