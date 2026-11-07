@@ -1,4 +1,4 @@
-const TUTORIAL_SEEN_COOKIE = 'linyu_auto_tutorial_seen'
+const TUTORIAL_SEEN_COOKIE = 'linyu_auto_tutorial_v2_seen'
 
 export function hasSeenAutoTutorial(): boolean {
   try {
