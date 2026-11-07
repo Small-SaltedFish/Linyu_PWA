@@ -69,10 +69,14 @@
       }
 
       h1 {
-        margin: 15px 0 7px;
+        margin: 15px 0 8px;
         font-size: 23px;
-        line-height: 1.2;
+        line-height: 1.16;
         letter-spacing: -0.04em;
+      }
+
+      h1 span {
+        color: #c7ceff;
       }
 
       .lead {
@@ -863,11 +867,30 @@
       }
 
       .footer-note {
-        margin: 14px auto 0;
+        margin: 7px auto 0;
         max-width: 310px;
         color: rgba(148, 161, 184, 0.8);
         font-size: 9px;
         line-height: 1.6;
+      }
+
+      .footer-note:first-of-type {
+        margin-top: 14px;
+      }
+
+      .footer-note--warn {
+        color: rgba(255, 189, 107, 0.76);
+      }
+
+      .footer-note--water {
+        color: rgba(148, 161, 184, 0.66);
+      }
+
+      .play-info {
+        margin: 10px 0 0;
+        color: rgba(199, 206, 255, 0.56);
+        font-size: 8px;
+        letter-spacing: 0.08em;
       }
 
       .replay {
@@ -904,8 +927,8 @@
   <body>
     <main class="demo">
       <span class="eyebrow"><i></i> 自动控水 · 30 秒学会</span>
-      <h1>手机会自己判断姿态</h1>
-      <p class="lead">自动模式通过检测手机朝向工作：屏幕朝下暂停，朝上继续，竖直 3 秒结束。</p>
+      <h1>翻转你的手机<br /><span>把水阀随开随关</span></h1>
+      <p class="lead">自动模式会检测手机姿态：屏幕朝向，就是水阀的开关。</p>
 
       <div class="stage" id="stage">
         <span class="orbit"></span>
@@ -987,7 +1010,10 @@
         <span class="active"></span><span></span><span></span><span></span>
       </div>
 
-      <p class="footer-note">首次进入自动模式有 15 秒防误触保护；这段时间拿起手机不会结束用水。</p>
+      <p class="footer-note">首次进入自动模式有 15 秒防误触保护。</p>
+      <p class="footer-note footer-note--warn">自动模式需要保持亮屏；息屏会自动退出。洗澡期间会阻止息屏。</p>
+      <p class="footer-note footer-note--water">注意防水：浴室水汽和溅水可能损坏手机，建议使用支持生活防水的手机。</p>
+      <p class="play-info" id="playInfo">自动演示 1 / 3</p>
       <button class="replay" type="button" id="replay">↻ 重播演示</button>
     </main>
 
@@ -1051,6 +1077,9 @@
 
       let timer = 0
       let index = 0
+      let playCount = 0
+      const TOTAL_PLAYS = 3
+      const playInfo = document.getElementById('playInfo')
 
       function render(state) {
         phone.className = `phone is-${state.key.toLowerCase()}${state.paused ? ' is-paused' : ''}${state.finished ? ' is-finished' : ''}`
@@ -1070,13 +1099,26 @@
         steps.forEach((dot, i) => dot.classList.toggle('active', i === index))
       }
 
-      function finishVertical() {
+      function finishVertical(auto = false) {
         phone.classList.add('is-finished')
         stage.classList.remove('is-paused')
         stage.classList.add('is-finished')
         statusText.textContent = '已结束'
         stageStatus.textContent = '已结束'
         phoneHint.textContent = '已结束，查看结算'
+        if (!auto) return
+        if (playCount < TOTAL_PLAYS - 1) {
+          playCount += 1
+          playInfo.textContent = `自动演示 ${playCount + 1} / ${TOTAL_PLAYS}`
+          timer = window.setTimeout(() => {
+            phone.classList.remove('is-finished')
+            stage.classList.remove('is-finished', 'is-paused')
+            index = 0
+            playNext()
+          }, 1400)
+          return
+        }
+        playInfo.textContent = '演示结束 · 点击重播'
       }
 
       function playNext() {
@@ -1084,7 +1126,7 @@
         const state = states[index]
         timer = window.setTimeout(() => {
           if (index === states.length - 1) {
-            finishVertical()
+            finishVertical(true)
             return
           }
           index += 1
@@ -1097,6 +1139,8 @@
         phone.classList.remove('is-finished')
         stage.classList.remove('is-finished', 'is-paused')
         index = 0
+        playCount = 0
+        playInfo.textContent = `自动演示 1 / ${TOTAL_PLAYS}`
         playNext()
       }
 
@@ -1109,7 +1153,7 @@
       }
 
       window.setTutorialState = setState
-      window.finishTutorial = finishVertical
+      window.finishTutorial = () => finishVertical(false)
       window.setTutorialStep = (next) => {
         window.clearTimeout(timer)
         index = Math.max(0, Math.min(states.length - 1, Number(next) || 0))
