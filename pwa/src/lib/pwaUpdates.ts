@@ -11,6 +11,7 @@ let registrationRef: ServiceWorkerRegistration | null = null
 let pending = false
 let checking = false
 let applyTimer = 0
+let reloading = false
 
 function canApplyNow(): boolean {
   const state = useAppStore.getState()
@@ -45,17 +46,25 @@ function markReload() {
  * 调试页手动更新不受这个保护限制。
  */
 async function applyUpdate(manual: boolean): Promise<boolean> {
-  if (!updateSW || !canApplyNow()) return false
+  if (!updateSW || !canApplyNow() || reloading) return false
   if (!manual && recentReload()) return false
   if (manual) markReload()
   else markReload()
   pending = false
+  reloading = true
   try {
     sessionStorage.setItem('linyu_updated_at', String(Date.now()))
   } catch {
     // ignore
   }
-  await updateSW(true)
+  try {
+    await updateSW(true)
+  } catch {
+    reloading = false
+    return false
+  }
+  // 如果没有触发页面卸载（例如没有 waiting SW），恢复，允许下次检查
+  reloading = false
   return true
 }
 
@@ -85,6 +94,20 @@ function scheduleApply() {
  */
 export function setupPwaUpdates() {
   if (typeof window === 'undefined' || !('serviceWorker' in navigator)) return
+
+  const hadController = Boolean(navigator.serviceWorker.controller)
+  navigator.serviceWorker.addEventListener('controllerchange', () => {
+    // 新 SW 已经接管，但某些浏览器不会自动刷新页面。
+    // 首次安装（之前没有 controller）不刷新；更新时刷新一次。
+    if (!hadController || reloading) return
+    reloading = true
+    try {
+      sessionStorage.setItem('linyu_updated_at', String(Date.now()))
+    } catch {
+      // ignore
+    }
+    window.location.reload()
+  })
 
   updateSW = registerSW({
     immediate: true,
