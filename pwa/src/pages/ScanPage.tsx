@@ -324,6 +324,11 @@ export function ScanPage() {
     return () => document.removeEventListener('pointerdown', onFirstPointer, { capture: true })
   }, [autoFlip, motionState, requestScanMotion])
 
+  const showTutorialOnce = () => {
+    if (hasSeenAutoTutorial()) return
+    setTutorialOpen(true)
+  }
+
   const toggleAutoFlip = async () => {
     if (autoFlip) {
       setAutoFlip(false)
@@ -343,6 +348,7 @@ export function ScanPage() {
         if (result !== 'granted') {
           setMotionState('denied')
           showToast('未获得方向传感器权限，自动模式未开启', 'danger')
+          showTutorialOnce()
           return
         }
         markMotionPermissionGranted()
@@ -350,11 +356,13 @@ export function ScanPage() {
       } catch {
         setMotionState('denied')
         showToast('方向传感器授权失败，自动模式未开启', 'danger')
+        showTutorialOnce()
         return
       }
     }
     setAutoFlip(true)
     writeAutoFlipPreference(true)
+    showTutorialOnce()
   }
 
   const confirmStart = async () => {
