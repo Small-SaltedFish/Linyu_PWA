@@ -59,7 +59,8 @@ export function ScanPage() {
   const [looking, setLooking] = useState(false)
   const [starting, setStarting] = useState(false)
   const [autoFlip, setAutoFlip] = useState(() => readAutoFlipPreference())
-  const [motionState, setMotionState] = useState<'unknown' | 'checking' | 'granted' | 'needed' | 'denied'>('unknown')
+  const [motionState, setMotionState] = useState<'unknown' | 'granted' | 'needed' | 'denied'>('unknown')
+  const [motionRequesting, setMotionRequesting] = useState(false)
   const motionRequestRef = useRef(false)
   const immediateAttemptRef = useRef(false)
   const needsMotionPermission = autoFlip && motionPermissionRequired()
@@ -256,7 +257,7 @@ export function ScanPage() {
   const requestScanMotion = useCallback(async (fromGesture = false) => {
     if (!autoFlip || !motionPermissionRequired() || motionRequestRef.current) return
     motionRequestRef.current = true
-    setMotionState('checking')
+    setMotionRequesting(true)
     try {
       const ctor = DeviceOrientationEvent as typeof DeviceOrientationEvent & {
         requestPermission?: () => Promise<'granted' | 'denied' | 'default'>
@@ -281,6 +282,7 @@ export function ScanPage() {
       setMotionState(fromGesture ? 'denied' : 'needed')
     } finally {
       motionRequestRef.current = false
+      setMotionRequesting(false)
     }
   }, [autoFlip])
 
@@ -296,11 +298,11 @@ export function ScanPage() {
   // 自动请求失败后，第一次触摸页面时再试一次。
   useEffect(() => {
     if (!autoFlip || !motionPermissionRequired() || motionState === 'granted') return
-    if (motionState === 'checking' || motionState === 'unknown') return
+    if (motionState === 'unknown') return
     const onFirstPointer = (event: PointerEvent) => {
       const target = event.target as HTMLElement | null
       // 开关自己会走 toggleAutoFlip 的授权流程，避免同一手势请求两次
-      if (target?.closest('.scan-auto')) return
+      if (target?.closest('.scan-auto, .scan-permission')) return
       void requestScanMotion(true)
     }
     document.addEventListener('pointerdown', onFirstPointer, { capture: true })
@@ -430,8 +432,12 @@ export function ScanPage() {
               自动翻转需要方向传感器权限
               {motionState === 'denied' ? '，当前已拒绝' : ''}
             </span>
-            <button type="button" onClick={() => void requestScanMotion(true)}>
-              {motionState === 'denied' ? '重试授权' : '立即授权'}
+            <button
+              type="button"
+              onClick={() => void requestScanMotion(true)}
+              disabled={motionRequesting}
+            >
+              {motionRequesting ? '请求中…' : motionState === 'denied' ? '重试授权' : '立即授权'}
             </button>
           </div>
         )}
