@@ -18,8 +18,20 @@ interface BeforeInstallPromptEvent extends Event {
   userChoice: Promise<{ outcome: 'accepted' | 'dismissed'; platform: string }>
 }
 
+// Chrome 可能在 React 首次挂载前就抛出 beforeinstallprompt。
+// 尽早接住，避免「我的」页面晚一步监听导致事件丢失、只剩「浏览器菜单」。
+let earlyInstallPrompt: BeforeInstallPromptEvent | null = null
+if (typeof window !== 'undefined') {
+  window.addEventListener('beforeinstallprompt', (event) => {
+    event.preventDefault()
+    earlyInstallPrompt = event as BeforeInstallPromptEvent
+  })
+}
+
 export function useInstallPrompt() {
-  const [promptEvent, setPromptEvent] = useState<BeforeInstallPromptEvent | null>(null)
+  const [promptEvent, setPromptEvent] = useState<BeforeInstallPromptEvent | null>(
+    () => earlyInstallPrompt,
+  )
   const [installed, setInstalled] = useState(
     () => window.matchMedia('(display-mode: standalone)').matches,
   )
@@ -31,6 +43,7 @@ export function useInstallPrompt() {
     }
     const onInstalled = () => {
       setInstalled(true)
+      earlyInstallPrompt = null
       setPromptEvent(null)
     }
     window.addEventListener('beforeinstallprompt', onPrompt)
@@ -45,6 +58,7 @@ export function useInstallPrompt() {
     if (!promptEvent) return false
     await promptEvent.prompt()
     const choice = await promptEvent.userChoice
+    earlyInstallPrompt = null
     if (choice.outcome === 'accepted') setInstalled(true)
     setPromptEvent(null)
     return choice.outcome === 'accepted'
@@ -54,11 +68,21 @@ export function useInstallPrompt() {
   const isIos =
     /iphone|ipad|ipod/i.test(ua) ||
     (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1)
-  // iOS 上的 Chrome / Edge / Firefox / 微信内置浏览器都不能真正安装 PWA；
-  // 只有 Safari 的「添加到主屏幕」会创建独立 Web App。
   const isSafari =
     isIos &&
     /Safari/i.test(ua) &&
     !/(CriOS|FxiOS|EdgiOS|OPiOS|GSA|DuckDuckGo|MicroMessenger|FBAN|FBAV|Instagram)/i.test(ua)
-  return { canInstall: Boolean(promptEvent), installed, install, isIos, isSafari }
+  const isIosChrome = isIos && /CriOS/i.test(ua)
+  const isAndroid = /Android/i.test(ua)
+  const isInAppBrowser = /MicroMessenger|FBAN|FBAV|Instagram/i.test(ua)
+  return {
+    canInstall: Boolean(promptEvent),
+    installed,
+    install,
+    isIos,
+    isSafari,
+    isIosChrome,
+    isAndroid,
+    isInAppBrowser,
+  }
 }

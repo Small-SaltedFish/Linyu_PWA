@@ -5557,3 +5557,37 @@ body.tutorial-open {
     bottom: 0;
   }
 }
+
+.safari-demo__lines {
+  flex: none;
+  margin-right: 8px;
+  color: var(--ink);
+  font-size: 14px;
+  letter-spacing: 0.08em;
+  line-height: 1;
+}
+
+.safari-demo__share-inline,
+.safari-demo__more-inline {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 21px;
+  height: 21px;
+  margin-left: auto;
+  border-radius: 50%;
+  color: #fff;
+  background: var(--primary);
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.safari-demo__more-inline {
+  color: var(--ink-soft);
+  background: var(--surface-soft);
+  font-size: 16px;
+}
+
+.safari-demo__share-inline {
+  animation: safari-pulse 2.4s ease-in-out infinite;
+}

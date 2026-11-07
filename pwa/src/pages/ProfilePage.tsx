@@ -15,7 +15,7 @@ import {
 import { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { BrandMark } from '../components/BrandMark'
-import { SafariInstallGuide } from '../components/SafariInstallGuide'
+import { InstallGuide } from '../components/InstallGuide'
 import { PageHeader } from '../components/PageHeader'
 import { Sheet } from '../components/Sheet'
 import {
@@ -42,10 +42,10 @@ export function ProfilePage() {
   const setTheme = useAppStore((state) => state.setTheme)
   const logout = useAppStore((state) => state.logout)
   const showToast = useUiStore((state) => state.showToast)
-  const { canInstall, installed, install, isIos, isSafari } = useInstallPrompt()
+  const { canInstall, installed, install, isIos, isSafari, isIosChrome, isAndroid } = useInstallPrompt()
   const [logoutOpen, setLogoutOpen] = useState(false)
   const [aboutOpen, setAboutOpen] = useState(false)
-  const [safariGuideOpen, setSafariGuideOpen] = useState(false)
+  const [installGuideOpen, setInstallGuideOpen] = useState(false)
   const [passwordOpen, setPasswordOpen] = useState(false)
   const [passwordMode, setPasswordMode] = useState<'old' | 'sms'>('old')
   const [oldPwd, setOldPwd] = useState('')
@@ -244,20 +244,18 @@ export function ProfilePage() {
           </span>
           <span className="settings-row__copy">
             <strong>安装到桌面</strong>
-            <small>{installed ? '已安装为 PWA' : isIos ? (isSafari ? 'Safari → 分享 → 添加到主屏幕' : '请用 Safari 打开后添加') : '像 App 一样使用'}</small>
+            <small>{installed ? '已安装为 PWA' : isIos ? (isSafari ? 'Safari → 三条横线 → 添加到主屏幕' : isIosChrome ? 'Chrome → 分享 → 添加到主屏幕' : '查看浏览器安装步骤') : isAndroid ? 'Chrome → 菜单 → 安装应用' : '像 App 一样使用'}</small>
           </span>
           {installed ? (
             <span className="tag tag--muted">已完成</span>
-          ) : isIos ? (
-            <button className="mini-button" onClick={() => setSafariGuideOpen(true)}>
-              <Download size={15} /> {isSafari ? '查看步骤' : '用 Safari 打开'}
+          ) : isIos || isAndroid || !canInstall ? (
+            <button className="mini-button" onClick={() => setInstallGuideOpen(true)}>
+              <Download size={15} /> 查看步骤
             </button>
-          ) : canInstall ? (
+          ) : (
             <button className="mini-button" onClick={() => void install()}>
               <Download size={15} /> 一键安装
             </button>
-          ) : (
-            <span className="tag tag--muted">浏览器菜单</span>
           )}
         </div>
         <button className="settings-row" onClick={() => setAboutOpen(true)}>
@@ -441,10 +439,20 @@ export function ProfilePage() {
         </div>
       </Sheet>
 
-      <SafariInstallGuide
-        open={safariGuideOpen}
-        onClose={() => setSafariGuideOpen(false)}
-        isSafari={isSafari}
+      <InstallGuide
+        open={installGuideOpen}
+        onClose={() => setInstallGuideOpen(false)}
+        mode={
+          isIos
+            ? isSafari
+              ? 'ios-safari'
+              : isIosChrome
+                ? 'ios-chrome'
+                : 'ios-other'
+            : isAndroid
+              ? 'android'
+              : 'generic'
+        }
       />
     </main>
   )
