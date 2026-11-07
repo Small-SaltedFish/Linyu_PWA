@@ -112,6 +112,154 @@
         transform: rotate(-18deg) scaleY(0.64);
       }
 
+      .stage-status {
+        position: absolute;
+        z-index: 5;
+        top: 16px;
+        left: 24px;
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        padding: 6px 8px;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 999px;
+        color: rgba(255, 255, 255, 0.72);
+        background: rgba(21, 28, 45, 0.78);
+        box-shadow: 0 8px 18px rgba(0, 0, 0, 0.18);
+        font-size: 8px;
+        font-weight: 650;
+        letter-spacing: 0.02em;
+        transition: color 0.25s ease, border-color 0.25s ease;
+      }
+
+      .stage-status i {
+        width: 5px;
+        height: 5px;
+        border-radius: 50%;
+        background: var(--green);
+        box-shadow: 0 0 8px var(--green);
+        transition: background 0.25s ease, box-shadow 0.25s ease;
+      }
+
+      .stage.is-paused .stage-status {
+        color: var(--amber);
+        border-color: rgba(255, 189, 107, 0.24);
+      }
+
+      .stage.is-paused .stage-status i {
+        background: var(--amber);
+        box-shadow: 0 0 8px var(--amber);
+      }
+
+      .stage.is-finished .stage-status {
+        color: var(--blue);
+        border-color: rgba(87, 182, 255, 0.22);
+      }
+
+      .stage.is-finished .stage-status i {
+        background: var(--blue);
+        box-shadow: 0 0 8px var(--blue);
+      }
+
+      .shower {
+        position: absolute;
+        z-index: 4;
+        top: 20px;
+        right: 28px;
+        width: 92px;
+        height: 155px;
+        pointer-events: none;
+      }
+
+      .shower__arm {
+        position: absolute;
+        top: 5px;
+        right: -3px;
+        width: 40px;
+        height: 22px;
+        border-top: 2px solid rgba(183, 197, 225, 0.56);
+        border-left: 2px solid rgba(183, 197, 225, 0.56);
+        border-radius: 22px 0 0 0;
+        transform: rotate(-12deg);
+        opacity: 0.72;
+      }
+
+      .shower__head {
+        position: absolute;
+        top: 21px;
+        right: 0;
+        width: 56px;
+        height: 18px;
+        border-radius: 50% 50% 44% 44%;
+        background: linear-gradient(180deg, #7b88a8, #34415e 58%, #1b253b);
+        box-shadow: 0 4px 0 rgba(0, 0, 0, 0.24), 0 0 18px rgba(124, 140, 248, 0.18);
+        transform: rotate(11deg);
+      }
+
+      .shower__head::before {
+        content: '';
+        position: absolute;
+        right: 9px;
+        bottom: -3px;
+        width: 34px;
+        height: 7px;
+        border-radius: 50%;
+        background-image: radial-gradient(circle, #0b1321 1.2px, transparent 1.6px);
+        background-size: 6px 5px;
+        background-position: 1px 1px;
+        opacity: 0.9;
+      }
+
+      .shower__head::after {
+        content: '';
+        position: absolute;
+        top: 3px;
+        left: 8px;
+        width: 25px;
+        height: 5px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.14);
+        filter: blur(1px);
+      }
+
+      .shower__streams {
+        position: absolute;
+        top: 39px;
+        right: 7px;
+        width: 42px;
+        height: 110px;
+        transform: rotate(11deg);
+        transform-origin: top center;
+      }
+
+      .shower__streams i {
+        position: absolute;
+        top: 0;
+        width: 1px;
+        height: 48px;
+        border-radius: 999px;
+        background: linear-gradient(180deg, rgba(87, 182, 255, 0.08), rgba(87, 182, 255, 0.68), transparent);
+        animation: shower-flow 1.25s linear infinite;
+      }
+
+      .shower__streams i:nth-child(1) { left: 3px; height: 40px; animation-delay: -0.2s; }
+      .shower__streams i:nth-child(2) { left: 8px; height: 54px; animation-delay: -0.7s; }
+      .shower__streams i:nth-child(3) { left: 14px; height: 46px; animation-delay: -1.1s; }
+      .shower__streams i:nth-child(4) { left: 20px; height: 58px; animation-delay: -0.45s; }
+      .shower__streams i:nth-child(5) { left: 26px; height: 42px; animation-delay: -0.9s; }
+
+      @keyframes shower-flow {
+        0% { opacity: 0; transform: translateY(-8px) scaleY(0.6); }
+        15% { opacity: 1; }
+        100% { opacity: 0; transform: translateY(66px) scaleY(1.1); }
+      }
+
+      .stage.is-paused .shower__streams i,
+      .stage.is-finished .shower__streams i {
+        animation: none;
+        opacity: 0;
+      }
+
       .table {
         position: absolute;
         z-index: 1;
@@ -684,6 +832,14 @@
 
       <div class="stage" id="stage">
         <span class="orbit"></span>
+        <span class="stage-status" id="stageStatus"><i></i><span>正在用水</span></span>
+        <span class="shower" aria-hidden="true">
+          <span class="shower__arm"></span>
+          <span class="shower__head"></span>
+          <span class="shower__streams">
+            <i></i><i></i><i></i><i></i><i></i>
+          </span>
+        </span>
         <div class="table" aria-hidden="true">
           <span class="table__grid"></span>
           <span class="table__label">桌面</span>
@@ -760,6 +916,7 @@
       const captionNote = document.getElementById('captionNote')
       const shadow = document.getElementById('shadow')
       const stage = document.getElementById('stage')
+      const stageStatus = document.querySelector('#stageStatus span')
       const steps = [...document.querySelectorAll('#steps span')]
 
       const states = [
@@ -812,7 +969,10 @@
         phone.className = `phone is-${state.key.toLowerCase()}${state.paused ? ' is-paused' : ''}${state.finished ? ' is-finished' : ''}`
         shadow.className = `phone-shadow is-${state.key.toLowerCase()}`
         stage.classList.toggle('is-vertical', state.key === 'vertical')
+        stage.classList.toggle('is-paused', Boolean(state.paused))
+        stage.classList.toggle('is-finished', Boolean(state.finished))
         statusText.textContent = state.finished ? '已结束' : state.paused ? '已暂停' : state.key === 'vertical' ? '检测中' : '正在用水'
+        stageStatus.textContent = state.finished ? '已结束' : state.paused ? '已暂停' : state.key === 'vertical' ? '检测姿态' : '正在用水'
         backStatus.textContent = state.paused ? '已暂停' : '正在用水'
         phoneHint.textContent = state.hint
         stepNo.textContent = String(index + 1)
@@ -825,7 +985,10 @@
 
       function finishVertical() {
         phone.classList.add('is-finished')
+        stage.classList.remove('is-paused')
+        stage.classList.add('is-finished')
         statusText.textContent = '已结束'
+        stageStatus.textContent = '已结束'
         phoneHint.textContent = '已结束，查看结算'
       }
 
@@ -845,6 +1008,7 @@
       function start() {
         window.clearTimeout(timer)
         phone.classList.remove('is-finished')
+        stage.classList.remove('is-finished', 'is-paused')
         index = 0
         playNext()
       }
@@ -863,6 +1027,7 @@
         window.clearTimeout(timer)
         index = Math.max(0, Math.min(states.length - 1, Number(next) || 0))
         phone.classList.remove('is-finished')
+        stage.classList.remove('is-finished', 'is-paused')
         render(states[index])
       }
       document.getElementById('replay').addEventListener('click', start)
