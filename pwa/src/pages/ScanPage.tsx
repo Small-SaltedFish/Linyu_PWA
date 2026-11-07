@@ -59,6 +59,9 @@ export function ScanPage() {
   const [looking, setLooking] = useState(false)
   const [starting, setStarting] = useState(false)
   const [autoFlip, setAutoFlip] = useState(() => readAutoFlipPreference())
+  const [motionState, setMotionState] = useState<'unknown' | 'granted' | 'denied'>('unknown')
+  const motionRequestRef = useRef(false)
+  const needsMotionPermission = autoFlip && motionPermissionRequired()
 
   const stopCamera = useCallback(() => {
     window.cancelAnimationFrame(rafRef.current)
@@ -248,6 +251,45 @@ export function ScanPage() {
     setPending(device)
   }
 
+  const requestScanMotion = useCallback(async () => {
+    if (!autoFlip || !motionPermissionRequired() || motionRequestRef.current) return
+    motionRequestRef.current = true
+    try {
+      const ctor = DeviceOrientationEvent as typeof DeviceOrientationEvent & {
+        requestPermission?: () => Promise<'granted' | 'denied' | 'default'>
+      }
+      if (typeof ctor.requestPermission !== 'function') {
+        setMotionState('granted')
+        return
+      }
+      const result = await ctor.requestPermission()
+      if (result === 'granted') {
+        markMotionPermissionGranted()
+        setMotionState('granted')
+      } else {
+        setMotionState('denied')
+      }
+    } catch {
+      setMotionState('denied')
+    } finally {
+      motionRequestRef.current = false
+    }
+  }, [autoFlip])
+
+  // 扫码页打开时如果 cookie 里自动模式是开的，用第一次触摸检查/请求方向权限。
+  // iOS 不允许没有用户手势时弹权限，所以不能直接在 mount 里请求。
+  useEffect(() => {
+    if (!autoFlip || !motionPermissionRequired() || motionState === 'granted') return
+    const onFirstPointer = (event: PointerEvent) => {
+      const target = event.target as HTMLElement | null
+      // 开关自己会走 toggleAutoFlip 的授权流程，避免同一手势请求两次
+      if (target?.closest('.scan-auto')) return
+      void requestScanMotion()
+    }
+    document.addEventListener('pointerdown', onFirstPointer, { capture: true })
+    return () => document.removeEventListener('pointerdown', onFirstPointer, { capture: true })
+  }, [autoFlip, motionState, requestScanMotion])
+
   const toggleAutoFlip = async () => {
     if (autoFlip) {
       setAutoFlip(false)
@@ -265,11 +307,14 @@ export function ScanPage() {
       try {
         const result = await ctor.requestPermission()
         if (result !== 'granted') {
+          setMotionState('denied')
           showToast('未获得方向传感器权限，自动模式未开启', 'danger')
           return
         }
         markMotionPermissionGranted()
+        setMotionState('granted')
       } catch {
+        setMotionState('denied')
         showToast('方向传感器授权失败，自动模式未开启', 'danger')
         return
       }
@@ -362,6 +407,18 @@ export function ScanPage() {
             <button onClick={submitManual}>识别</button>
           </label>
         </div>
+        {needsMotionPermission && motionState !== 'granted' && (
+          <div className="scan-permission">
+            <span>
+              自动翻转需要方向传感器权限
+              {motionState === 'denied' ? '，当前已拒绝' : ''}
+            </span>
+            <button type="button" onClick={() => void requestScanMotion()}>
+              {motionState === 'denied' ? '重试授权' : '立即授权'}
+            </button>
+          </div>
+        )}
+
         <div className={`scan-auto ${autoFlip ? 'is-on' : ''}`}>
           <span className="scan-auto__icon">
             <RotateCcw size={17} />
