@@ -72,13 +72,18 @@
 }
 
 html {
+  height: 100%;
   background: var(--bg);
+  overscroll-behavior-y: none;
 }
 
 body {
   margin: 0;
   min-width: 320px;
   min-height: 100svh;
+  min-height: 100dvh;
+  overflow-x: hidden;
+  overscroll-behavior-y: none;
   background:
     radial-gradient(900px 480px at 88% -12%, rgba(94, 114, 228, 0.12), transparent 62%),
     radial-gradient(700px 420px at -12% 18%, rgba(130, 94, 228, 0.08), transparent 58%),
@@ -123,6 +128,7 @@ h3 {
   width: 100%;
   max-width: 480px;
   min-height: 100svh;
+  min-height: 100dvh;
   margin: 0 auto;
   background: var(--bg);
   overflow-x: hidden;
@@ -135,6 +141,7 @@ h3 {
 
   .app-shell {
     min-height: calc(100svh - 48px);
+    min-height: calc(100dvh - 48px);
     border-radius: 30px;
     box-shadow: var(--shadow-lg);
     overflow: hidden;
@@ -143,6 +150,7 @@ h3 {
 
 .page {
   min-height: 100svh;
+  min-height: 100dvh;
   padding: 24px 20px 112px;
   animation: page-in 0.38s ease both;
 }
@@ -1083,17 +1091,17 @@ h3 {
   z-index: 60;
   right: 0;
   bottom: 0;
-  left: 50%;
+  left: 0;
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   align-items: end;
   width: 100%;
   max-width: 480px;
+  margin: 0 auto;
   padding: 8px 10px calc(8px + env(safe-area-inset-bottom));
   border-top: 1px solid var(--line);
-  background: color-mix(in srgb, var(--surface) 92%, transparent);
+  background: color-mix(in srgb, var(--surface) 94%, transparent);
   backdrop-filter: blur(18px);
-  transform: translateX(-50%);
 }
 
 .bottom-nav__item {
@@ -4960,5 +4968,14 @@ button {
     width: 100%;
     justify-content: flex-end;
     margin-left: 0;
+  }
+}
+
+/* iOS Safari 的 fixed + backdrop-filter 在滚动时可能抖动；
+   底栏使用实色背景，保证始终贴在视口底部。 */
+@supports (-webkit-touch-callout: none) {
+  .bottom-nav {
+    background: var(--surface);
+    backdrop-filter: none;
   }
 }

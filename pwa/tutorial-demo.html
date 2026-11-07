@@ -1,0 +1,682 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+    <title>自动控水教程 · 动画演示</title>
+    <style>
+      :root {
+        color-scheme: dark;
+        --bg: #0b101b;
+        --surface: #151c2d;
+        --surface-2: #1d2740;
+        --ink: #f4f6fb;
+        --muted: #94a1b8;
+        --line: rgba(255, 255, 255, 0.1);
+        --primary: #7c8cf8;
+        --primary-2: #a78bfa;
+        --green: #3ddc97;
+        --amber: #ffbd6b;
+        --blue: #57b6ff;
+        --phone: #080c15;
+      }
+
+      * { box-sizing: border-box; }
+
+      html, body {
+        margin: 0;
+        min-height: 100%;
+        background:
+          radial-gradient(480px 300px at 90% -10%, rgba(124, 140, 248, 0.22), transparent 70%),
+          radial-gradient(420px 260px at -10% 30%, rgba(167, 139, 250, 0.14), transparent 70%),
+          var(--bg);
+        color: var(--ink);
+        font-family: 'Inter', 'SF Pro Text', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', system-ui, sans-serif;
+      }
+
+      body {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 28px 18px calc(28px + env(safe-area-inset-bottom));
+      }
+
+      .demo {
+        width: min(100%, 390px);
+        text-align: center;
+      }
+
+      .eyebrow {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 6px 10px;
+        border: 1px solid rgba(124, 140, 248, 0.28);
+        border-radius: 999px;
+        color: #c7ceff;
+        background: rgba(124, 140, 248, 0.1);
+        font-size: 10px;
+        font-weight: 700;
+        letter-spacing: 0.04em;
+      }
+
+      .eyebrow i {
+        width: 5px;
+        height: 5px;
+        border-radius: 50%;
+        background: var(--green);
+        box-shadow: 0 0 10px var(--green);
+      }
+
+      h1 {
+        margin: 15px 0 7px;
+        font-size: 23px;
+        line-height: 1.2;
+        letter-spacing: -0.04em;
+      }
+
+      .lead {
+        margin: 0 auto;
+        max-width: 310px;
+        color: var(--muted);
+        font-size: 12px;
+        line-height: 1.65;
+      }
+
+      .stage {
+        position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 390px;
+        margin: 12px auto 0;
+        perspective: 1100px;
+      }
+
+      .stage::before {
+        content: '';
+        position: absolute;
+        width: 230px;
+        height: 230px;
+        border-radius: 50%;
+        background: radial-gradient(circle, rgba(124, 140, 248, 0.17), transparent 68%);
+        filter: blur(4px);
+      }
+
+      .orbit {
+        position: absolute;
+        width: 294px;
+        height: 294px;
+        border: 1px dashed rgba(255, 255, 255, 0.12);
+        border-radius: 50%;
+        transform: rotate(-18deg) scaleY(0.64);
+      }
+
+      .orbit::after {
+        content: '';
+        position: absolute;
+        top: -3px;
+        left: 50%;
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: var(--primary);
+        box-shadow: 0 0 12px var(--primary);
+      }
+
+      .phone {
+        position: relative;
+        z-index: 2;
+        width: 178px;
+        height: 348px;
+        border: 2px solid #303a58;
+        border-radius: 30px;
+        background: var(--phone);
+        box-shadow:
+          0 34px 60px rgba(0, 0, 0, 0.5),
+          0 0 0 1px rgba(255, 255, 255, 0.04) inset;
+        transform-style: preserve-3d;
+        transform: rotateX(0deg) rotateZ(0deg) scale(0.92);
+        transition: transform 0.85s cubic-bezier(0.22, 0.9, 0.24, 1), box-shadow 0.85s ease;
+        will-change: transform;
+      }
+
+      .phone.is-upright {
+        transform: rotateX(0deg) rotateZ(0deg) scale(0.92);
+      }
+
+      .phone.is-faceup {
+        transform: rotateX(67deg) rotateZ(0deg) scale(0.94);
+        box-shadow: 0 24px 48px rgba(0, 0, 0, 0.42);
+      }
+
+      .phone.is-facedown {
+        transform: rotateX(180deg) rotateZ(0deg) scale(0.92);
+      }
+
+      .phone__front,
+      .phone__back {
+        position: absolute;
+        inset: 0;
+        border-radius: 28px;
+        overflow: hidden;
+        backface-visibility: hidden;
+        -webkit-backface-visibility: hidden;
+      }
+
+      .phone__front {
+        padding: 9px;
+        background: #050812;
+      }
+
+      .phone__back {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 18px;
+        transform: rotateX(180deg);
+        background:
+          linear-gradient(145deg, rgba(255, 255, 255, 0.06), transparent 45%),
+          #1b2338;
+        border: 1px solid rgba(255, 255, 255, 0.06);
+      }
+
+      .camera {
+        width: 58px;
+        height: 58px;
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 19px;
+        background:
+          radial-gradient(circle at 38% 38%, #3e4b73 0 9%, #111827 10% 22%, transparent 23%),
+          radial-gradient(circle at 65% 65%, #27324d 0 7%, #0e1422 8% 18%, transparent 19%),
+          #0d1320;
+      }
+
+      .phone__back small {
+        color: rgba(255, 255, 255, 0.42);
+        font-size: 9px;
+        letter-spacing: 0.18em;
+      }
+
+      .phone__back strong {
+        color: var(--amber);
+        font-size: 13px;
+      }
+
+      .screen {
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+        padding: 15px 14px 13px;
+        border-radius: 22px;
+        overflow: hidden;
+        background:
+          radial-gradient(160px 100px at 110% -10%, rgba(124, 140, 248, 0.32), transparent 70%),
+          linear-gradient(160deg, #202a4a, #11182b 62%);
+      }
+
+      .screen__top {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
+        color: rgba(255, 255, 255, 0.68);
+        font-size: 8px;
+        font-weight: 650;
+      }
+
+      .status {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        padding: 4px 7px;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.06);
+      }
+
+      .status i {
+        width: 5px;
+        height: 5px;
+        border-radius: 50%;
+        background: var(--green);
+        box-shadow: 0 0 9px var(--green);
+        transition: background 0.25s ease, box-shadow 0.25s ease;
+      }
+
+      .phone.is-paused .status i {
+        background: var(--amber);
+        box-shadow: 0 0 9px var(--amber);
+      }
+
+      .phone.is-finished .status i {
+        background: var(--blue);
+        box-shadow: 0 0 9px var(--blue);
+      }
+
+      .water {
+        position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex: 1;
+        min-height: 0;
+      }
+
+      .water__halo {
+        position: absolute;
+        width: 112px;
+        height: 112px;
+        border: 1px solid rgba(87, 182, 255, 0.16);
+        border-radius: 50%;
+        transition: opacity 0.35s ease;
+      }
+
+      .water__halo::before,
+      .water__halo::after {
+        content: '';
+        position: absolute;
+        inset: 15px;
+        border: 1px solid rgba(87, 182, 255, 0.12);
+        border-radius: 50%;
+      }
+
+      .water__halo::after {
+        inset: 30px;
+      }
+
+      .drop {
+        position: relative;
+        z-index: 2;
+        display: grid;
+        place-items: center;
+        width: 58px;
+        height: 58px;
+        border: 1px solid rgba(87, 182, 255, 0.28);
+        border-radius: 50%;
+        color: #dff6ff;
+        background: radial-gradient(circle at 35% 25%, rgba(87, 182, 255, 0.5), rgba(31, 110, 180, 0.24));
+        box-shadow: 0 0 30px rgba(87, 182, 255, 0.18);
+        font-size: 25px;
+        transition: opacity 0.35s ease, transform 0.35s ease;
+      }
+
+      .phone.is-paused .drop {
+        opacity: 0.4;
+        transform: scale(0.88);
+      }
+
+      .phone.is-finished .drop {
+        opacity: 0.18;
+      }
+
+      .streams {
+        position: absolute;
+        inset: 0;
+        overflow: hidden;
+        border-radius: 18px;
+      }
+
+      .streams span {
+        position: absolute;
+        bottom: -18px;
+        width: 2px;
+        height: 22px;
+        border-radius: 999px;
+        background: linear-gradient(180deg, transparent, rgba(87, 182, 255, 0.7));
+        animation: rise 1.8s linear infinite;
+      }
+
+      .streams span:nth-child(1) { left: 28%; animation-delay: -0.3s; }
+      .streams span:nth-child(2) { left: 44%; height: 30px; animation-delay: -1.1s; }
+      .streams span:nth-child(3) { left: 60%; animation-delay: -0.7s; }
+      .streams span:nth-child(4) { left: 72%; height: 17px; animation-delay: -1.5s; }
+
+      .phone.is-paused .streams span,
+      .phone.is-finished .streams span {
+        animation-play-state: paused;
+        opacity: 0;
+      }
+
+      @keyframes rise {
+        0% { opacity: 0; transform: translateY(0) scaleY(0.7); }
+        20% { opacity: 0.9; }
+        100% { opacity: 0; transform: translateY(-150px) scaleY(1.1); }
+      }
+
+      .screen__bottom {
+        position: relative;
+        z-index: 2;
+        padding-top: 9px;
+        border-top: 1px solid rgba(255, 255, 255, 0.09);
+        text-align: left;
+      }
+
+      .amount {
+        font-size: 21px;
+        font-weight: 760;
+        letter-spacing: -0.04em;
+      }
+
+      .amount small {
+        margin-right: 2px;
+        color: rgba(255, 255, 255, 0.55);
+        font-size: 11px;
+      }
+
+      .phone-hint {
+        margin-top: 3px;
+        color: rgba(255, 255, 255, 0.48);
+        font-size: 8px;
+      }
+
+      .screen__finish {
+        position: absolute;
+        z-index: 3;
+        inset: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        border-radius: 22px;
+        background: rgba(8, 13, 24, 0.84);
+        backdrop-filter: blur(3px);
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.3s ease;
+      }
+
+      .phone.is-finished .screen__finish {
+        opacity: 1;
+      }
+
+      .finish-icon {
+        display: grid;
+        place-items: center;
+        width: 34px;
+        height: 34px;
+        border-radius: 50%;
+        color: #072018;
+        background: var(--green);
+        font-size: 18px;
+        font-weight: 800;
+      }
+
+      .screen__finish strong {
+        font-size: 12px;
+      }
+
+      .screen__finish span {
+        color: var(--muted);
+        font-size: 8px;
+      }
+
+      .caption-card {
+        position: relative;
+        margin-top: -2px;
+        padding: 13px 15px;
+        border: 1px solid var(--line);
+        border-radius: 18px;
+        background: rgba(21, 28, 45, 0.8);
+        box-shadow: 0 16px 34px rgba(0, 0, 0, 0.22);
+      }
+
+      .caption-card__top {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 7px;
+        color: var(--primary);
+        font-size: 10px;
+        font-weight: 700;
+      }
+
+      .caption-card__top .step-index {
+        display: grid;
+        place-items: center;
+        width: 18px;
+        height: 18px;
+        border-radius: 50%;
+        color: #fff;
+        background: linear-gradient(135deg, var(--primary), var(--primary-2));
+        font-size: 9px;
+      }
+
+      .caption-card h2 {
+        margin: 7px 0 3px;
+        font-size: 15px;
+        letter-spacing: -0.02em;
+      }
+
+      .caption-card p {
+        margin: 0;
+        color: var(--muted);
+        font-size: 10px;
+        line-height: 1.55;
+      }
+
+      .steps {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        margin: 13px 0 0;
+      }
+
+      .steps span {
+        width: 5px;
+        height: 5px;
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.18);
+        transition: width 0.3s ease, background 0.3s ease;
+      }
+
+      .steps span.active {
+        width: 18px;
+        background: var(--primary);
+      }
+
+      .footer-note {
+        margin: 14px auto 0;
+        max-width: 310px;
+        color: rgba(148, 161, 184, 0.8);
+        font-size: 9px;
+        line-height: 1.6;
+      }
+
+      .replay {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        margin-top: 13px;
+        padding: 8px 12px;
+        border: 1px solid var(--line);
+        border-radius: 999px;
+        color: var(--ink);
+        background: rgba(255, 255, 255, 0.05);
+        font-size: 10px;
+        font-weight: 650;
+      }
+
+      .replay:active { transform: scale(0.97); }
+
+      @media (max-width: 380px) {
+        .stage { height: 360px; }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        .phone,
+        .drop,
+        .streams span,
+        .steps span {
+          transition: none !important;
+          animation: none !important;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="demo">
+      <span class="eyebrow"><i></i> 自动控水 · 30 秒学会</span>
+      <h1>手机扣下暂停，翻回继续</h1>
+      <p class="lead">不用找按钮。自动模式下，手机的朝向就是你的开关。</p>
+
+      <div class="stage">
+        <span class="orbit"></span>
+        <div class="phone is-upright" id="phone">
+          <div class="phone__front">
+            <div class="screen">
+              <div class="screen__top">
+                <span>淋浴中</span>
+                <span class="status"><i></i><span id="statusText">正在用水</span></span>
+              </div>
+              <div class="water">
+                <span class="water__halo"></span>
+                <div class="streams"><span></span><span></span><span></span><span></span></div>
+                <div class="drop">
+                  <svg viewBox="0 0 24 24" width="27" height="27" fill="none" aria-hidden="true">
+                    <path d="M12 3.2S5.8 10.4 5.8 14.8a6.2 6.2 0 0 0 12.4 0C18.2 10.4 12 3.2 12 3.2Z" stroke="currentColor" stroke-width="1.5"/>
+                    <path d="M9.2 15.2c.2 1.4 1.3 2.3 2.7 2.4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
+                  </svg>
+                </div>
+              </div>
+              <div class="screen__bottom">
+                <div class="amount"><small>¥</small><span id="amountText">0.18</span></div>
+                <div class="phone-hint" id="phoneHint">保持竖立，水正常流动</div>
+              </div>
+              <div class="screen__finish">
+                <span class="finish-icon">✓</span>
+                <strong>本次用水已结束</strong>
+                <span>回到首页查看结算</span>
+              </div>
+            </div>
+          </div>
+          <div class="phone__back">
+            <span class="camera"></span>
+            <small>手机背面</small>
+            <strong id="backStatus">已暂停</strong>
+          </div>
+        </div>
+      </div>
+
+      <section class="caption-card">
+        <div class="caption-card__top"><span class="step-index" id="stepNo">1</span><span id="stepTag">正常用水</span></div>
+        <h2 id="captionTitle">手机竖起</h2>
+        <p id="captionText">保持竖立，水正常流动。翻转手机前，先记住这个状态。</p>
+      </section>
+
+      <div class="steps" id="steps" aria-hidden="true">
+        <span class="active"></span><span></span><span></span><span></span>
+      </div>
+
+      <p class="footer-note">首次进入自动模式有 15 秒防误触保护；这段时间拿起手机不会结束用水。</p>
+      <button class="replay" type="button" id="replay">↻ 重播演示</button>
+    </main>
+
+    <script>
+      const phone = document.getElementById('phone')
+      const statusText = document.getElementById('statusText')
+      const backStatus = document.getElementById('backStatus')
+      const phoneHint = document.getElementById('phoneHint')
+      const stepNo = document.getElementById('stepNo')
+      const stepTag = document.getElementById('stepTag')
+      const captionTitle = document.getElementById('captionTitle')
+      const captionText = document.getElementById('captionText')
+      const steps = [...document.querySelectorAll('#steps span')]
+
+      const states = [
+        {
+          key: 'upright',
+          tag: '正常用水',
+          title: '手机竖起',
+          text: '保持竖立，水正常流动。翻转手机前，先记住这个状态。',
+          hint: '保持竖立，水正常流动',
+          paused: false,
+          finished: false,
+          delay: 1800,
+        },
+        {
+          key: 'faceDown',
+          tag: '自动暂停',
+          title: '扣下手机',
+          text: '屏幕朝下扣在桌上，水会自动暂停，不用再找按钮。',
+          hint: '扣下后已暂停',
+          paused: true,
+          finished: false,
+          delay: 2400,
+        },
+        {
+          key: 'faceUp',
+          tag: '自动继续',
+          title: '正面朝上平放',
+          text: '把手机翻回来、屏幕朝上平放，水会自动继续。',
+          hint: '翻回正面，继续用水',
+          paused: false,
+          finished: false,
+          delay: 2400,
+        },
+        {
+          key: 'upright',
+          tag: '结束用水',
+          title: '竖直拿起 3 秒',
+          text: '水用完后，把手机竖直拿起保持约 3 秒，自动结束并弹出本次汇总。',
+          hint: '已结束，查看结算',
+          paused: false,
+          finished: true,
+          delay: 3200,
+        },
+      ]
+
+      let timer = 0
+      let index = 0
+
+      function render(state) {
+        phone.className = `phone is-${state.key.toLowerCase()}${state.paused ? ' is-paused' : ''}${state.finished ? ' is-finished' : ''}`
+        statusText.textContent = state.finished ? '已结束' : state.paused ? '已暂停' : '正在用水'
+        backStatus.textContent = state.paused ? '已暂停' : '正在用水'
+        phoneHint.textContent = state.hint
+        stepNo.textContent = String(index + 1)
+        stepTag.textContent = state.tag
+        captionTitle.textContent = state.title
+        captionText.textContent = state.text
+        steps.forEach((dot, i) => dot.classList.toggle('active', i === index))
+      }
+
+      function playNext() {
+        render(states[index])
+        const state = states[index]
+        timer = window.setTimeout(() => {
+          if (index === states.length - 1) return
+          index += 1
+          playNext()
+        }, state.delay)
+      }
+
+      function start() {
+        window.clearTimeout(timer)
+        index = 0
+        playNext()
+      }
+
+      function setState(name) {
+        window.clearTimeout(timer)
+        const next = states.findIndex((state) => state.key === name)
+        if (next < 0) return
+        index = next
+        render(states[index])
+      }
+
+      window.setTutorialState = setState
+      window.setTutorialStep = (next) => {
+        window.clearTimeout(timer)
+        index = Math.max(0, Math.min(states.length - 1, Number(next) || 0))
+        render(states[index])
+      }
+      document.getElementById('replay').addEventListener('click', start)
+      start()
+    </script>
+  </body>
+</html>
