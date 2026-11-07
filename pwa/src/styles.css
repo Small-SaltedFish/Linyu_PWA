@@ -4867,3 +4867,98 @@ button {
   font-size: 9px;
   font-weight: 700;
 }
+
+.balance-card__actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-left: auto;
+}
+
+.balance-card__bottom .balance-card__recharge {
+  padding: 5px 9px;
+  border-radius: 999px;
+  color: #4f61d8;
+  background: #fff;
+  box-shadow: 0 4px 12px rgba(25, 35, 90, 0.14);
+}
+
+.balance-card__bottom .balance-card__recharge svg {
+  stroke-width: 2.6;
+}
+
+.recharge-sheet {
+  padding: 2px 2px 4px;
+  text-align: center;
+}
+
+.recharge-sheet__icon {
+  display: grid;
+  place-items: center;
+  width: 56px;
+  height: 56px;
+  margin: 2px auto 13px;
+  border-radius: 18px;
+  color: #fff;
+  background: linear-gradient(145deg, #5e72e4, #825ee4);
+  box-shadow: 0 10px 22px rgba(94, 114, 228, 0.24);
+}
+
+.recharge-sheet__lead {
+  max-width: 310px;
+  margin: 0 auto 8px;
+  color: var(--ink);
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1.6;
+}
+
+.recharge-sheet__copy {
+  max-width: 320px;
+  margin: 0 auto 16px;
+  color: var(--muted);
+  font-size: 11px;
+  line-height: 1.7;
+}
+
+.recharge-sheet .primary-button {
+  margin-top: 0;
+}
+
+.recharge-sheet__remember {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin: 12px 2px 0;
+  color: var(--muted);
+  font-size: 10px;
+  line-height: 1.5;
+  text-align: left;
+}
+
+.recharge-sheet__remember input {
+  flex: none;
+  width: 16px;
+  height: 16px;
+  margin-top: 1px;
+  accent-color: var(--primary);
+}
+
+.recharge-sheet__hint {
+  margin-top: 10px;
+  color: var(--muted);
+  font-size: 9px;
+}
+
+@media (max-width: 360px) {
+  .balance-card__bottom {
+    align-items: flex-end;
+    flex-wrap: wrap;
+  }
+
+  .balance-card__actions {
+    width: 100%;
+    justify-content: flex-end;
+    margin-left: 0;
+  }
+}

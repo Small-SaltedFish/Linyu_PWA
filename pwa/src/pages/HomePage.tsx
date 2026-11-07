@@ -7,10 +7,13 @@ import {
   ChevronRight,
   Clock3,
   MapPin,
+  Plus,
   ReceiptText,
   ScanLine,
   Sparkles,
   WalletCards,
+  MessageCircle,
+  ExternalLink,
   X,
 } from 'lucide-react'
 import { useState } from 'react'
@@ -18,8 +21,14 @@ import { createPortal } from 'react-dom'
 import { useNavigate } from 'react-router-dom'
 import type { LiveProject } from '../api/live'
 import { DeviceGlyph } from '../components/DeviceGlyph'
+import { Sheet } from '../components/Sheet'
 import { DRYER_ENABLED } from '../lib/features'
 import { trackEvent } from '../lib/analytics'
+import {
+  hasRechargeDirectCookie,
+  jumpToWeChatRecharge,
+  rememberRechargeDirect,
+} from '../lib/recharge'
 import { formatAmount, formatDateTime, formatDuration, formatMoney } from '../lib/format'
 import { useElapsed } from '../lib/hooks'
 import { useAppStore } from '../store/useAppStore'
@@ -48,11 +57,32 @@ export function HomePage() {
   const [switching, setSwitching] = useState(false)
   const [projectsLoading, setProjectsLoading] = useState(false)
   const [starting, setStarting] = useState(false)
+  const [rechargeOpen, setRechargeOpen] = useState(false)
+  const [rememberRecharge, setRememberRecharge] = useState(false)
 
   const liveOrder = activeOrder?.mode === 'live'
   const referenceDevice = lastDevice ?? activeOrder?.device ?? null
   const lowBalanceThreshold = (referenceDevice?.withhold ?? 10) * 1.5
   const lowBalance = Boolean(referenceDevice) && balance < lowBalanceThreshold
+
+  const openRecharge = () => {
+    if (mode !== 'live') {
+      showToast('演示模式不提供充值', 'default')
+      return
+    }
+    if (hasRechargeDirectCookie()) {
+      jumpToWeChatRecharge()
+      return
+    }
+    setRememberRecharge(false)
+    setRechargeOpen(true)
+  }
+
+  const jumpRecharge = () => {
+    if (rememberRecharge) rememberRechargeDirect()
+    setRechargeOpen(false)
+    jumpToWeChatRecharge()
+  }
 
   const start = async () => {
     if (!lastDevice) {
@@ -171,9 +201,14 @@ export function HomePage() {
         </div>
         <div className="balance-card__bottom">
           <span>余额由趣智校园钱包提供</span>
-          <button onClick={() => navigate('/records')}>
-            查看明细 <ArrowUpRight size={14} />
-          </button>
+          <div className="balance-card__actions">
+            <button type="button" className="balance-card__recharge" onClick={openRecharge}>
+              去充值 <Plus size={13} />
+            </button>
+            <button onClick={() => navigate('/records')}>
+              查看明细 <ArrowUpRight size={14} />
+            </button>
+          </div>
         </div>
       </section>
 
@@ -181,7 +216,7 @@ export function HomePage() {
         <button
           type="button"
           className="balance-warning"
-          onClick={() => showToast('请前往趣智校园充值，余额不足会影响下一次开阀', 'danger')}
+          onClick={openRecharge}
         >
           <AlertTriangle size={16} />
           <span>
@@ -330,6 +365,32 @@ export function HomePage() {
           <Sparkles size={13} /> 数据来自趣智校园接口
         </p>
       )}
+
+      <Sheet open={rechargeOpen} onClose={() => setRechargeOpen(false)} title="去微信小程序充值">
+        <div className="recharge-sheet">
+          <span className="recharge-sheet__icon">
+            <MessageCircle size={26} />
+          </span>
+          <p className="recharge-sheet__lead">
+            受微信 / 支付宝 App SDK 限制，网页无法直接拉起原生支付。
+          </p>
+          <p className="recharge-sheet__copy">
+            建议前往「趣智校园」微信小程序充值：不用下载 App，广告更少，余额也会同步到当前账号。
+          </p>
+          <button type="button" className="primary-button primary-button--full" onClick={jumpRecharge}>
+            打开微信小程序充值 <ExternalLink size={16} />
+          </button>
+          <label className="recharge-sheet__remember">
+            <input
+              type="checkbox"
+              checked={rememberRecharge}
+              onChange={(event) => setRememberRecharge(event.target.checked)}
+            />
+            <span>我知道了，以后直接跳转到微信小程序</span>
+          </label>
+          <p className="recharge-sheet__hint">支付完成后回到这里刷新余额即可。</p>
+        </div>
+      </Sheet>
 
       {projectOpen &&
         createPortal(
