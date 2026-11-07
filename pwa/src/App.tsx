@@ -15,6 +15,8 @@ import { TiltDebugPage } from './pages/TiltDebugPage'
 import { trackEvent, trackInstall } from './lib/analytics'
 import { primeSounds } from './lib/sounds'
 import { useAppStore } from './store/useAppStore'
+import { useUiStore } from './store/useUiStore'
+import { APP_VERSION } from './lib/version'
 
 let restoredOnce = false
 
@@ -40,12 +42,25 @@ function Protected({ children }: { children: React.ReactNode }) {
 export default function App() {
   const theme = useAppStore((state) => state.settings.theme)
   const restoreSession = useAppStore((state) => state.restoreSession)
+  const showToast = useUiStore((state) => state.showToast)
 
   useEffect(() => {
     if (restoredOnce) return
     restoredOnce = true
     void restoreSession()
   }, [restoreSession])
+
+  useEffect(() => {
+    try {
+      const updatedAt = Number(sessionStorage.getItem('linyu_updated_at') ?? 0)
+      if (updatedAt && Date.now() - updatedAt < 5 * 60 * 1000) {
+        sessionStorage.removeItem('linyu_updated_at')
+        showToast(`已更新到 v${APP_VERSION}`, 'success')
+      }
+    } catch {
+      // ignore
+    }
+  }, [showToast])
 
   // 首次触摸解锁音频
   useEffect(() => {

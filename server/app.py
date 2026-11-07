@@ -181,7 +181,7 @@ def event_rows(handler: BaseHTTPRequestHandler, payload) -> list[tuple]:
 
 
 class Handler(BaseHTTPRequestHandler):
-    server_version = "LinyuStats/1.0"
+    server_version = "LinyuStats/1.0.0"
 
     def log_message(self, fmt: str, *args) -> None:
         print(f"[{self.log_date_time_string()}] {fmt % args}", flush=True)

@@ -50,6 +50,11 @@ async function applyUpdate(manual: boolean): Promise<boolean> {
   if (manual) markReload()
   else markReload()
   pending = false
+  try {
+    sessionStorage.setItem('linyu_updated_at', String(Date.now()))
+  } catch {
+    // ignore
+  }
   await updateSW(true)
   return true
 }

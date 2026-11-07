@@ -25,6 +25,7 @@ import {
 import { clearCredentials } from '../lib/credentials'
 import { encryptPassword, smsSecret } from '../lib/md5'
 import { useInstallPrompt } from '../lib/hooks'
+import { APP_VERSION } from '../lib/version'
 import { useAppStore } from '../store/useAppStore'
 import { useUiStore } from '../store/useUiStore'
 
@@ -246,7 +247,7 @@ export function ProfilePage() {
           </span>
           <span className="settings-row__copy">
             <strong>关于淋浴</strong>
-            <small>v0.1.0</small>
+            <small>v{APP_VERSION}</small>
           </span>
           <ChevronRight size={17} />
         </button>
@@ -394,7 +395,7 @@ export function ProfilePage() {
           <dl className="detail-list">
             <div>
               <dt>版本</dt>
-              <dd>v0.1.0</dd>
+              <dd>v{APP_VERSION}</dd>
             </div>
             <div>
               <dt>开源项目</dt>

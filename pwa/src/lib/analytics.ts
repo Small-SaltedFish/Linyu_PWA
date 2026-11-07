@@ -1,4 +1,5 @@
 import { useAppStore } from '../store/useAppStore'
+import { APP_VERSION } from './version'
 
 const INSTALL_KEY = 'linyu_install_id'
 const RUNTIME_BASE =
@@ -6,7 +7,7 @@ const RUNTIME_BASE =
 const BASE = (RUNTIME_BASE || import.meta.env.VITE_STATS_URL || '')
   .trim()
   .replace(/\/+$/, '')
-const VERSION = '0.1.0'
+const VERSION = APP_VERSION
 const MAX_QUEUE = 100
 
 interface EventPayload {
