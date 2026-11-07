@@ -59,6 +59,28 @@ VITE_API_BASE_URL=https://v3-api.china-qzxy.cn
 
 ---
 
+## 2.1 1Panel/Nginx 前面又套了 Cloudflare
+
+Cloudflare 默认会按扩展名缓存 `.js`，可能把 `/sw.js` 缓存 31 天，导致上传新版本后浏览器仍拿旧 Service Worker。
+
+必须：
+
+1. Cloudflare → Caching → Cache Rules 增加：
+   - URI Path equals `/sw.js` → Bypass cache
+   - URI Path equals `/index.html` → Bypass cache
+2. 每次发布后 Purge Cache：
+   - `https://你的域名/sw.js`
+   - 必要时整个域名
+3. 验证：
+
+```bash
+curl -I https://你的域名/sw.js | grep -i cache
+```
+
+不能出现 `cf-cache-status: HIT` + `max-age=2678400`。
+
+`public/_headers` 只对 Cloudflare Pages 生效；1Panel/Nginx 源站需要单独在 Cloudflare 配 Cache Rule。
+
 ## 3. 国内 CDN / 对象存储
 
 1. 对象存储（阿里 OSS / 腾讯 COS）开启静态网站，上传 `dist/`，默认首页 `index.html`。
