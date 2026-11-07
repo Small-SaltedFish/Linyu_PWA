@@ -244,17 +244,26 @@ export function ProfilePage() {
           </span>
           <span className="settings-row__copy">
             <strong>安装到桌面</strong>
-            <small>{installed ? '已安装为 PWA' : isIos ? (isSafari ? 'Safari → 三条横线 → 添加到主屏幕' : isIosChrome ? 'Chrome → 分享 → 添加到主屏幕' : '查看浏览器安装步骤') : isAndroid ? 'Chrome → 菜单 → 安装应用' : '像 App 一样使用'}</small>
+            <small>{installed ? '已安装为 PWA' : isIos ? (isSafari ? 'Safari → 三条横线 → 添加到主屏幕' : isIosChrome ? 'Chrome → 分享 → 添加到主屏幕' : '查看浏览器安装步骤') : isAndroid ? (canInstall ? '可一键安装，或从菜单手动安装' : 'Chrome → 菜单 → 安装应用') : '像 App 一样使用'}</small>
           </span>
           {installed ? (
             <span className="tag tag--muted">已完成</span>
-          ) : isIos || isAndroid || !canInstall ? (
+          ) : isIos ? (
+            <button className="mini-button" onClick={() => setInstallGuideOpen(true)}>
+              <Download size={15} /> {isSafari || isIosChrome ? '查看步骤' : '用 Safari 打开'}
+            </button>
+          ) : canInstall ? (
+            <div className="mini-actions">
+              <button className="mini-button" onClick={() => void install()}>
+                <Download size={15} /> 一键安装
+              </button>
+              <button className="mini-link" onClick={() => setInstallGuideOpen(true)}>
+                步骤
+              </button>
+            </div>
+          ) : (
             <button className="mini-button" onClick={() => setInstallGuideOpen(true)}>
               <Download size={15} /> 查看步骤
-            </button>
-          ) : (
-            <button className="mini-button" onClick={() => void install()}>
-              <Download size={15} /> 一键安装
             </button>
           )}
         </div>

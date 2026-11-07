@@ -1,6 +1,5 @@
-import { Copy, ExternalLink, Share } from 'lucide-react'
+import { ExternalLink, Share } from 'lucide-react'
 import { Sheet } from './Sheet'
-import { useUiStore } from '../store/useUiStore'
 
 export type InstallGuideMode =
   | 'ios-safari'
@@ -12,7 +11,7 @@ export type InstallGuideMode =
 const MODE_COPY: Record<InstallGuideMode, { eyebrow: string; steps: { title: string; text: string }[] }> =
   {
     'ios-safari': {
-      eyebrow: 'Safari · 最新版',
+      eyebrow: 'iOS',
       steps: [
         {
           title: '点左下角的三条横线',
@@ -46,11 +45,11 @@ const MODE_COPY: Record<InstallGuideMode, { eyebrow: string; steps: { title: str
       ],
     },
     'ios-other': {
-      eyebrow: 'iOS 浏览器',
+      eyebrow: 'iOS · 其他浏览器',
       steps: [
         {
-          title: '换用 Safari 或 Chrome',
-          text: 'iPhone 上不同浏览器的安装入口不同。建议用 Safari 或 Chrome 打开本页。',
+          title: '用 Safari 打开本页',
+          text: 'iPhone 上建议用 Safari 安装；Safari 在屏幕左下角有三条横线。',
         },
         {
           title: '点浏览器的分享按钮',
@@ -107,19 +106,9 @@ export function InstallGuide({
   onClose: () => void
   mode: InstallGuideMode
 }) {
-  const showToast = useUiStore((state) => state.showToast)
   const copy = MODE_COPY[mode]
   const isIos = mode.startsWith('ios-')
   const isAndroid = mode === 'android'
-
-  const copyLink = async () => {
-    try {
-      await navigator.clipboard.writeText(window.location.href)
-      showToast('链接已复制，请在浏览器中打开', 'success')
-    } catch {
-      showToast('复制失败，请手动复制地址栏链接', 'danger')
-    }
-  }
 
   return (
     <Sheet open={open} onClose={onClose} title="添加到主屏幕">
@@ -127,7 +116,7 @@ export function InstallGuide({
         {mode === 'ios-other' && (
           <div className="safari-guide__warning">
             <ExternalLink size={17} />
-            <span>当前不是 Safari / Chrome，建议复制链接，用 Safari 或 Chrome 打开后再添加。</span>
+            <span>当前不是 Safari / Chrome，请用 Safari 或 Chrome 打开后再添加。</span>
           </div>
         )}
         {mode === 'android' && (
@@ -167,9 +156,6 @@ export function InstallGuide({
             <strong>{copy.eyebrow} 的操作</strong>
             <p>{mode === 'ios-safari' ? '菜单在链接左边，是三条横线。' : '不同版本入口位置可能略有不同。'}</p>
           </div>
-          <button type="button" className="ghost-button" onClick={() => void copyLink()}>
-            <Copy size={15} /> 复制链接
-          </button>
         </div>
 
         <ol className="safari-steps">
@@ -201,8 +187,11 @@ export function InstallGuide({
             <strong>卡在通知栏「正在安装」？</strong>
             <p>
               先下拉通知栏取消，完全关闭 Chrome 再重开；确认 Google Play 服务可用。大陆网络下 WebAPK
-              可能连不上 Google 的安装服务，会一直卡住。可以改用菜单里的「添加到主屏幕」创建快捷方式，
-              或继续在浏览器里使用。
+              可能连不上 Google 的安装服务，会一直卡住。
+            </p>
+            <p>
+              解决顺序：改用菜单里的「添加到主屏幕」创建快捷方式 → 换 Edge / Samsung Internet 试一次
+              → 仍然不行就继续浏览器使用，或安装单独的 APK / TWA 壳。
             </p>
           </div>
         )}
