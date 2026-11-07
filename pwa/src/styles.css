@@ -5636,3 +5636,24 @@ body.tutorial-open {
 .mini-link:active {
   opacity: 0.6;
 }
+
+.safari-guide__note {
+  margin-bottom: 12px;
+  padding: 10px 11px;
+  border: 1px solid rgba(124, 140, 248, 0.18);
+  border-radius: 12px;
+  background: var(--primary-soft);
+}
+
+.safari-guide__note strong {
+  display: block;
+  margin-bottom: 3px;
+  color: var(--ink);
+  font-size: 10px;
+}
+
+.safari-guide__note p {
+  color: var(--ink-soft);
+  font-size: 9.5px;
+  line-height: 1.55;
+}

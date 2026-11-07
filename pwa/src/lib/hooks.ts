@@ -74,6 +74,12 @@ export function useInstallPrompt() {
     !/(CriOS|FxiOS|EdgiOS|OPiOS|GSA|DuckDuckGo|MicroMessenger|FBAN|FBAV|Instagram)/i.test(ua)
   const isIosChrome = isIos && /CriOS/i.test(ua)
   const isAndroid = /Android/i.test(ua)
+  const isAndroidChrome =
+    isAndroid &&
+    /Chrome\//i.test(ua) &&
+    !/(EdgA|OPR|SamsungBrowser|Firefox|UCBrowser|MiuiBrowser|HuaweiBrowser|VivoBrowser|HeyTapBrowser|Quark|MicroMessenger|; wv\))/i.test(
+      ua,
+    )
   const isInAppBrowser = /MicroMessenger|FBAN|FBAV|Instagram/i.test(ua)
   return {
     canInstall: Boolean(promptEvent),
@@ -83,6 +89,7 @@ export function useInstallPrompt() {
     isSafari,
     isIosChrome,
     isAndroid,
+    isAndroidChrome,
     isInAppBrowser,
   }
 }

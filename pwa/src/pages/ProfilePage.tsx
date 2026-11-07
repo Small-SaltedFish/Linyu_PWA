@@ -42,7 +42,7 @@ export function ProfilePage() {
   const setTheme = useAppStore((state) => state.setTheme)
   const logout = useAppStore((state) => state.logout)
   const showToast = useUiStore((state) => state.showToast)
-  const { canInstall, installed, install, isIos, isSafari, isIosChrome, isAndroid } = useInstallPrompt()
+  const { canInstall, installed, install, isIos, isSafari, isIosChrome, isAndroid, isAndroidChrome } = useInstallPrompt()
   const [logoutOpen, setLogoutOpen] = useState(false)
   const [aboutOpen, setAboutOpen] = useState(false)
   const [installGuideOpen, setInstallGuideOpen] = useState(false)
@@ -244,7 +244,7 @@ export function ProfilePage() {
           </span>
           <span className="settings-row__copy">
             <strong>安装到桌面</strong>
-            <small>{installed ? '已安装为 PWA' : isIos ? (isSafari ? 'Safari → 三条横线 → 添加到主屏幕' : isIosChrome ? 'Chrome → 分享 → 添加到主屏幕' : '查看浏览器安装步骤') : isAndroid ? (canInstall ? '可一键安装，或从菜单手动安装' : 'Chrome → 菜单 → 安装应用') : '像 App 一样使用'}</small>
+            <small>{installed ? '已安装为 PWA' : isIos ? (isSafari ? 'Safari → 三条横线 → 添加到主屏幕' : isIosChrome ? 'Chrome → 分享 → 添加到主屏幕' : '查看浏览器安装步骤') : isAndroid ? (isAndroidChrome ? (canInstall ? '可一键安装，或从菜单手动安装' : 'Chrome → 菜单 → 安装应用') : '菜单 → 添加到主屏幕（快捷方式）') : '像 App 一样使用'}</small>
           </span>
           {installed ? (
             <span className="tag tag--muted">已完成</span>
@@ -459,7 +459,9 @@ export function ProfilePage() {
                 ? 'ios-chrome'
                 : 'ios-other'
             : isAndroid
-              ? 'android'
+              ? isAndroidChrome
+                ? 'android'
+                : 'android-other'
               : 'generic'
         }
       />

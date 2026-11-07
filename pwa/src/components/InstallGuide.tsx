@@ -6,6 +6,7 @@ export type InstallGuideMode =
   | 'ios-chrome'
   | 'ios-other'
   | 'android'
+  | 'android-other'
   | 'generic'
 
 const MODE_COPY: Record<InstallGuideMode, { eyebrow: string; steps: { title: string; text: string }[] }> =
@@ -58,6 +59,23 @@ const MODE_COPY: Record<InstallGuideMode, { eyebrow: string; steps: { title: str
         {
           title: '点右上角「添加」',
           text: '添加后从桌面图标打开，就是独立窗口。',
+        },
+      ],
+    },
+    'android-other': {
+      eyebrow: 'Android · 其他浏览器',
+      steps: [
+        {
+          title: '打开浏览器菜单',
+          text: '不同浏览器入口不同，找「添加到主屏幕」「添加到桌面」或「快捷方式」。',
+        },
+        {
+          title: '创建快捷方式',
+          text: '这只是桌面快捷方式，打开后仍在浏览器中，不是独立 PWA。',
+        },
+        {
+          title: '也可以不安装',
+          text: '找不到入口就直接用浏览器访问，不影响扫码和开关水。',
         },
       ],
     },
@@ -128,6 +146,23 @@ export function InstallGuide({
           </div>
         )}
 
+        {mode === 'android' && (
+          <div className="safari-guide__note">
+            <strong>小提示</strong>
+            <p>
+              Google Play 连不上时可能需要魔法上网；不想折腾的话，也可以点「添加到主屏幕」当快捷方式，
+              继续在浏览器里使用。
+            </p>
+          </div>
+        )}
+
+        {mode === 'android-other' && (
+          <div className="safari-guide__warning">
+            <ExternalLink size={17} />
+            <span>其他 Android 浏览器没有统一安装入口，能在菜单里找到「添加到主屏幕」就当快捷方式用。</span>
+          </div>
+        )}
+
         <div className={`safari-demo safari-demo--${mode}`} aria-hidden="true">
           <div className="safari-demo__page">
             <span className="safari-demo__url">
@@ -179,7 +214,9 @@ export function InstallGuide({
               ? 'iOS Chrome 也可以创建桌面 PWA；如果菜单里没有，请更新 Chrome。'
               : mode === 'android'
                 ? '从桌面图标打开后才是独立 PWA；浏览器标签页不算安装。'
-                : '不同浏览器的安装入口名称可能不同，以实际菜单为准。'}
+                : mode === 'android-other'
+                  ? '这只是快捷方式，不是独立 PWA；能正常扫码用水就够了。'
+                  : '不同浏览器的安装入口名称可能不同，以实际菜单为准。'}
         </p>
 
         {mode === 'android' && (
