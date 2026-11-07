@@ -134,7 +134,7 @@ export function InstallGuide({
           <div className="safari-guide__warning">
             <ExternalLink size={17} />
             <span>
-              浏览器只有拿到安装事件时才能主动弹安装框；没有弹窗时，请用右上角菜单手动安装。
+              Chrome 有时不会自动弹安装框；没关系，用右上角菜单也能安装。
             </span>
           </div>
         )}
