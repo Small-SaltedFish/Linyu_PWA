@@ -2,6 +2,7 @@ import { useEffect } from 'react'
 import { Navigate, Route, Routes, useLocation } from 'react-router-dom'
 import { BottomNav } from './components/BottomNav'
 import { ToastViewport } from './components/ToastViewport'
+import { HelpPage } from './pages/HelpPage'
 import { HomePage } from './pages/HomePage'
 import { LegalPage } from './pages/LegalPage'
 import { LoginPage } from './pages/LoginPage'
@@ -150,6 +151,14 @@ export default function App() {
           element={
             <Protected>
               <ProfilePage />
+            </Protected>
+          }
+        />
+        <Route
+          path="/help"
+          element={
+            <Protected>
+              <HelpPage />
             </Protected>
           }
         />

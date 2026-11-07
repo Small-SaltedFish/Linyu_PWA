@@ -1,4 +1,5 @@
 import {
+  BookOpen,
   Building2,
   ChevronRight,
   Download,
@@ -225,6 +226,16 @@ export function ProfilePage() {
 
       <section className="settings-card">
         <div className="settings-group-label">应用</div>
+        <button className="settings-row" onClick={() => navigate('/help')}>
+          <span className="settings-row__icon settings-row__icon--blue">
+            <BookOpen size={19} />
+          </span>
+          <span className="settings-row__copy">
+            <strong>使用帮助</strong>
+            <small>开关水、自动模式、权限和注意事项</small>
+          </span>
+          <ChevronRight size={17} />
+        </button>
         <div className="settings-row">
           <span className="settings-row__icon settings-row__icon--blue">
             <Smartphone size={19} />

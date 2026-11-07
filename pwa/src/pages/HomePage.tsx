@@ -16,11 +16,12 @@ import {
   ExternalLink,
   X,
 } from 'lucide-react'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { useNavigate } from 'react-router-dom'
 import type { LiveProject } from '../api/live'
 import { DeviceGlyph } from '../components/DeviceGlyph'
+import { AutoTutorial } from '../components/AutoTutorial'
 import { Sheet } from '../components/Sheet'
 import { DRYER_ENABLED } from '../lib/features'
 import { trackEvent } from '../lib/analytics'
@@ -33,6 +34,7 @@ import { formatAmount, formatDateTime, formatDuration, formatMoney } from '../li
 import { useElapsed } from '../lib/hooks'
 import { useAppStore } from '../store/useAppStore'
 import { useUiStore } from '../store/useUiStore'
+import { hasSeenAutoTutorial, markAutoTutorialSeen } from '../lib/tutorialSeen'
 
 export function HomePage() {
   const navigate = useNavigate()
@@ -59,11 +61,24 @@ export function HomePage() {
   const [starting, setStarting] = useState(false)
   const [rechargeOpen, setRechargeOpen] = useState(false)
   const [rememberRecharge, setRememberRecharge] = useState(false)
+  const [tutorialOpen, setTutorialOpen] = useState(false)
 
   const liveOrder = activeOrder?.mode === 'live'
   const referenceDevice = lastDevice ?? activeOrder?.device ?? null
   const lowBalanceThreshold = (referenceDevice?.withhold ?? 10) * 1.5
   const lowBalance = Boolean(referenceDevice) && balance < lowBalanceThreshold
+
+  useEffect(() => {
+    if (mode !== 'live' || hasSeenAutoTutorial()) return
+    const timer = window.setTimeout(() => setTutorialOpen(true), 700)
+    return () => window.clearTimeout(timer)
+  }, [mode])
+
+  const closeTutorial = () => {
+    markAutoTutorialSeen()
+    setTutorialOpen(false)
+    showToast('已关闭教程，可在「我的 → 使用帮助」重复观看', 'default')
+  }
 
   const openRecharge = () => {
     if (mode !== 'live') {
@@ -391,6 +406,8 @@ export function HomePage() {
           <p className="recharge-sheet__hint">支付完成后回到这里刷新余额即可。</p>
         </div>
       </Sheet>
+
+      <AutoTutorial open={tutorialOpen} onClose={closeTutorial} />
 
       {projectOpen &&
         createPortal(

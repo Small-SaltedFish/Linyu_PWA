@@ -19,7 +19,7 @@ const items: NavItem[] = [
 
 export function BottomNav() {
   const location = useLocation()
-  const hidden = ['/login', '/scan', '/shower', '/spike', '/tilt', '/debug', '/terms', '/privacy'].includes(location.pathname)
+  const hidden = ['/login', '/scan', '/shower', '/spike', '/tilt', '/debug', '/terms', '/privacy', '/help'].includes(location.pathname)
 
   useEffect(() => {
     // 任何路由切换都确保底部导航不被残留的 sheet-open 类隐藏
