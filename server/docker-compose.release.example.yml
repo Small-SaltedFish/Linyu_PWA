@@ -1,7 +1,7 @@
-# v1.2.3 已发布到 GHCR。
+# v1.2.9 已发布到 GHCR。
 services:
   stats:
-    image: ghcr.io/small-saltedfish/linyu-pwa-stats:1.2.3
+    image: ghcr.io/small-saltedfish/linyu-pwa-stats:1.2.9
     restart: unless-stopped
     ports:
       - "8787:8080"
