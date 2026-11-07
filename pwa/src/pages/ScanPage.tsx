@@ -12,6 +12,7 @@ import {
 } from 'lucide-react'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { AutoTutorial } from '../components/AutoTutorial'
 import { DeviceGlyph } from '../components/DeviceGlyph'
 import { Sheet } from '../components/Sheet'
 import { demoDevices } from '../data/demo'
@@ -24,6 +25,7 @@ import {
   writeAutoFlipPreference,
 } from '../lib/autoFlip'
 import { DRYER_ENABLED } from '../lib/features'
+import { hasSeenAutoTutorial, markAutoTutorialSeen } from '../lib/tutorialSeen'
 import { formatMoney } from '../lib/format'
 import { playScanOpenSound } from '../lib/sounds'
 import { trackEvent } from '../lib/analytics'
@@ -61,8 +63,21 @@ export function ScanPage() {
   const [autoFlip, setAutoFlip] = useState(() => readAutoFlipPreference())
   const [motionState, setMotionState] = useState<'unknown' | 'granted' | 'needed' | 'denied'>('unknown')
   const [motionRequesting, setMotionRequesting] = useState(false)
+  const [tutorialOpen, setTutorialOpen] = useState(false)
   const motionRequestRef = useRef(false)
   const immediateAttemptRef = useRef(false)
+
+  useEffect(() => {
+    if (!autoFlip || mode !== 'live' || hasSeenAutoTutorial()) return
+    const timer = window.setTimeout(() => setTutorialOpen(true), 650)
+    return () => window.clearTimeout(timer)
+  }, [autoFlip, mode])
+
+  const closeScanTutorial = () => {
+    markAutoTutorialSeen()
+    setTutorialOpen(false)
+    showToast('已关闭教程，可在「我的 → 使用帮助」重复观看', 'default')
+  }
   const needsMotionPermission = autoFlip && motionPermissionRequired()
   const initialAutoFlipRef = useRef(autoFlip)
 
@@ -551,6 +566,7 @@ export function ScanPage() {
           </div>
         )}
       </Sheet>
+      <AutoTutorial open={tutorialOpen} onClose={closeScanTutorial} />
     </main>
   )
 }

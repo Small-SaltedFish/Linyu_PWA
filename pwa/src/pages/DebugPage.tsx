@@ -1,4 +1,4 @@
-import { ArrowLeft, Bug, Compass, FlaskConical, RefreshCw, RotateCcw } from 'lucide-react'
+import { ArrowLeft, Bug, Compass, Cookie, FlaskConical, RefreshCw, RotateCcw } from 'lucide-react'
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { applyPendingUpdate, checkForUpdateNow } from '../lib/pwaUpdates'
@@ -15,6 +15,18 @@ export function DebugPage() {
     loginDemo()
     showToast('已进入演示模式', 'success')
     navigate('/', { replace: true })
+  }
+
+  const clearCookies = () => {
+    const secure = window.location.protocol === 'https:' ? '; Secure' : ''
+    const names = document.cookie
+      .split(';')
+      .map((part) => part.split('=')[0]?.trim())
+      .filter(Boolean)
+    for (const name of names) {
+      document.cookie = `${name}=; Max-Age=0; Path=/; SameSite=Lax${secure}`
+    }
+    showToast('已清除本站 Cookie', 'success')
   }
 
   const checkUpdate = async () => {
@@ -92,6 +104,21 @@ export function DebugPage() {
         </div>
         <button className="ghost-button" onClick={() => navigate('/spike')}>
           打开 Spike 工具
+        </button>
+      </section>
+
+      <section className="debug-card">
+        <div className="debug-card__head">
+          <span className="debug-card__icon">
+            <Cookie size={19} />
+          </span>
+          <div>
+            <strong>清除所有 Cookie</strong>
+            <small>清除自动翻转、教程提示、充值直跳等站点 Cookie；不会退出账号</small>
+          </div>
+        </div>
+        <button className="ghost-button" onClick={clearCookies}>
+          <Cookie size={15} /> 清除 Cookie
         </button>
       </section>
 

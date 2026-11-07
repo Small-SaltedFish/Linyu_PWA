@@ -115,18 +115,11 @@ export function HelpPage() {
           <h2>注意事项</h2>
         </div>
         <ul className="help-list help-list--warn">
-          <li>自动模式需要保持亮屏；<strong>息屏会自动退出自动模式</strong>，洗澡期间应用会尽量阻止息屏。</li>
+          <li><strong>息屏会退出自动模式。</strong>自动模式需要保持亮屏；洗澡期间应用会尽量阻止息屏。</li>
           <li>首次开启自动模式有 15 秒防误触保护，期间拿起手机不会结束用水。</li>
           <li>浴室水汽和溅水可能损坏手机，建议使用支持生活防水的手机，并放在远离水流的位置。</li>
           <li>自动模式只负责暂停/继续/结束；设备故障、扣费异常请联系趣智校园官方。</li>
         </ul>
-      </section>
-
-      <section className="help-foot">
-        <p>教程可以随时回来重看。</p>
-        <button type="button" className="ghost-button" onClick={() => setTutorialOpen(true)}>
-          <PlayCircle size={16} /> 再看一遍
-        </button>
       </section>
 
       <AutoTutorial open={tutorialOpen} onClose={() => setTutorialOpen(false)} />

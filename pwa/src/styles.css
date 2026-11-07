@@ -5224,3 +5224,20 @@ body.tutorial-open {
   padding: 0 12px;
   font-size: 10px;
 }
+
+.legal-debug {
+  margin: 22px auto 0;
+  text-align: center;
+}
+
+.legal-debug a {
+  color: var(--muted);
+  font-size: 9px;
+  opacity: 0.16;
+  transition: opacity 0.2s ease;
+}
+
+.legal-debug a:hover,
+.legal-debug a:focus-visible {
+  opacity: 0.7;
+}

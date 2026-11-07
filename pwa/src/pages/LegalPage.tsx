@@ -113,7 +113,7 @@ export function LegalPage({ kind }: { kind: LegalKind }) {
               <li>随机生成的匿名 installId（用于统计去重）；</li>
               <li>趣智校园 loginCode、userId、accountId、projectId；</li>
               <li>最近设备、进行中订单、账单和余额快照；</li>
-              <li>主题、触感、自动翻转等偏好设置；</li>
+              <li>主题、自动翻转等偏好设置；</li>
               <li>如果选择「记住密码」，仅保存密码的 MD5 后 10 位 hash，不保存明文。</li>
             </ul>
             <p>这些数据只存在你的浏览器里，不会上传到本应用自己的服务器。</p>
@@ -169,6 +169,12 @@ export function LegalPage({ kind }: { kind: LegalKind }) {
         )}
         <Link to="/login">返回登录</Link>
       </div>
+
+      {!isTerms && (
+        <p className="legal-debug">
+          <Link to="/debug">调试</Link>
+        </p>
+      )}
     </main>
   )
 }
