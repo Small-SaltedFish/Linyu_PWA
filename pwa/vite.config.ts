@@ -1,6 +1,17 @@
 import react from '@vitejs/plugin-react'
 import { defineConfig } from 'vite'
+import type { Plugin } from 'vite'
+import { copyFileSync } from 'node:fs'
 import { VitePWA } from 'vite-plugin-pwa'
+
+function copyStandaloneTutorial(): Plugin {
+  return {
+    name: 'copy-standalone-tutorial',
+    closeBundle() {
+      copyFileSync('tutorial-demo.html', 'dist/tutorial-demo.html')
+    },
+  }
+}
 
 export default defineConfig({
   plugins: [
@@ -47,6 +58,7 @@ export default defineConfig({
       workbox: {
         globPatterns: ['**/*.{js,css,html,svg,png,webmanifest}'],
         navigateFallback: '/index.html',
+        navigateFallbackDenylist: [/^\/tutorial-demo\.html$/],
         cleanupOutdatedCaches: true,
         clientsClaim: false,
         skipWaiting: false,
@@ -55,5 +67,6 @@ export default defineConfig({
         enabled: false,
       },
     }),
+    copyStandaloneTutorial(),
   ],
 })
