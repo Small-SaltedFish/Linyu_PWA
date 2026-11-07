@@ -1,4 +1,4 @@
-# Linyu_PWA v1.0.0
+# Linyu_PWA v1.1.0
 
 一个无广告的趣智校园 PWA 客户端，附带一个匿名使用统计后端。
 
@@ -115,7 +115,7 @@ docker compose up -d --build
 
 ### 从镜像启动
 
-GitHub Release `v1.0.0` 已发布：
+GitHub Release `v1.1.0` 已发布：
 
 ```bash
 docker pull ghcr.io/small-saltedfish/linyu-pwa-stats:1.0.0
@@ -166,13 +166,13 @@ https://stats.example.com → http://127.0.0.1:8787
 
 ## 版本与发布
 
-当前版本：`v1.0.0`
+当前版本：`v1.1.0`
 
 发布时：
 
-- Git tag：`v1.0.0`
-- 前端 Release 附件：只放构建产物 `linyu-pwa-web-v1.0.0.zip`
-- 后端镜像：只发 GHCR，标签 `1.0.0`、`1.0`，正式版可加 `latest`
+- Git tag：`v1.1.0`
+- 前端 Release 附件：只放构建产物 `linyu-pwa-web-v1.1.0.zip`
+- 后端镜像：只发 GHCR，标签 `1.1.0`、`1.1`，正式版可加 `latest`
 - 后端镜像不打进 Release 附件，使用 registry 拉取
 - 不额外放 SHA256 校验文件
 - workflow：`.github/workflows/release.yml`，只有推 `v*` tag 才触发
