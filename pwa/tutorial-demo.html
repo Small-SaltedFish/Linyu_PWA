@@ -375,11 +375,14 @@
         z-index: 2;
         width: 178px;
         height: 348px;
-        border: 2px solid #303a58;
+        border: 2px solid #4a5674;
+        border-bottom: 7px solid #202b43;
         border-radius: 30px;
         background: var(--phone);
         box-shadow:
           0 34px 60px rgba(0, 0, 0, 0.5),
+          0 8px 0 -1px #111a2b,
+          0 10px 0 -1px #35415f,
           0 0 0 1px rgba(255, 255, 255, 0.04) inset;
         transform-style: preserve-3d;
         transform: rotateX(0deg) rotateZ(0deg) scale(0.92);
@@ -392,12 +395,12 @@
       }
 
       .phone.is-faceup {
-        transform: translateY(86px) rotateX(78deg) rotateY(0deg) scale(0.86);
+        transform: translateY(86px) rotateX(65deg) rotateY(0deg) scale(0.86);
         box-shadow: 0 20px 38px rgba(0, 0, 0, 0.38);
       }
 
       .phone.is-facedown {
-        transform: translateY(86px) rotateX(78deg) rotateY(180deg) scale(0.86);
+        transform: translateY(86px) rotateX(65deg) rotateY(180deg) scale(0.86);
       }
 
       .phone.is-vertical {
@@ -423,8 +426,9 @@
         display: flex;
         flex-direction: column;
         align-items: center;
-        justify-content: center;
-        gap: 18px;
+        justify-content: flex-end;
+        gap: 14px;
+        padding-bottom: 40px;
         transform: rotateY(180deg);
         background:
           linear-gradient(145deg, rgba(255, 255, 255, 0.06), transparent 45%),
@@ -432,15 +436,90 @@
         border: 1px solid rgba(255, 255, 255, 0.06);
       }
 
-      .camera {
-        width: 58px;
-        height: 58px;
-        border: 1px solid rgba(255, 255, 255, 0.08);
-        border-radius: 19px;
+      .camera-plateau {
+        position: absolute;
+        top: 10px;
+        left: 10px;
+        right: 10px;
+        height: 76px;
+        border: 1px solid rgba(255, 255, 255, 0.07);
+        border-radius: 23px;
         background:
-          radial-gradient(circle at 38% 38%, #3e4b73 0 9%, #111827 10% 22%, transparent 23%),
-          radial-gradient(circle at 65% 65%, #27324d 0 7%, #0e1422 8% 18%, transparent 19%),
-          #0d1320;
+          linear-gradient(145deg, rgba(255, 255, 255, 0.06), transparent 44%),
+          #151d2e;
+        box-shadow:
+          inset 0 1px 0 rgba(255, 255, 255, 0.07),
+          0 8px 18px rgba(0, 0, 0, 0.28);
+      }
+
+      .camera-lenses {
+        position: absolute;
+        top: 18px;
+        left: 11px;
+        width: 102px;
+        height: 38px;
+      }
+
+      .lens {
+        position: absolute;
+        display: block;
+        width: 27px;
+        height: 27px;
+        border-radius: 50%;
+        background:
+          radial-gradient(circle at 38% 31%, #5c6d9d 0 7%, #273555 8% 19%, #0a101c 20% 48%, #03060b 49% 100%);
+        box-shadow:
+          0 0 0 3px #101827,
+          0 0 0 4px rgba(255, 255, 255, 0.08),
+          inset 0 0 0 2px #02040a,
+          0 4px 7px rgba(0, 0, 0, 0.42);
+      }
+
+      .lens::after {
+        content: '';
+        position: absolute;
+        top: 6px;
+        left: 7px;
+        width: 7px;
+        height: 5px;
+        border-radius: 50%;
+        background: rgba(137, 166, 255, 0.48);
+        filter: blur(1px);
+        transform: rotate(-30deg);
+      }
+
+      .lens--one { top: 0; left: 0; }
+      .lens--two { top: 0; left: 34px; }
+      .lens--three { top: 0; left: 68px; }
+
+      .camera-extras {
+        position: absolute;
+        top: 15px;
+        right: 13px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .flash {
+        display: block;
+        width: 12px;
+        height: 12px;
+        border: 1px solid rgba(255, 255, 255, 0.14);
+        border-radius: 50%;
+        background: radial-gradient(circle at 35% 30%, #fff8d6, #b49a55 45%, #3e3520 70%);
+        box-shadow: 0 0 9px rgba(255, 225, 150, 0.24);
+      }
+
+      .lidar {
+        display: block;
+        width: 9px;
+        height: 9px;
+        border: 1px solid rgba(255, 255, 255, 0.11);
+        border-radius: 50%;
+        background: #080d16;
+        box-shadow: inset 0 0 0 2px #111a2a;
       }
 
       .phone__back small {
@@ -882,7 +961,17 @@
             </div>
           </div>
           <div class="phone__back">
-            <span class="camera"></span>
+            <span class="camera-plateau">
+              <span class="camera-lenses">
+                <i class="lens lens--one"></i>
+                <i class="lens lens--two"></i>
+                <i class="lens lens--three"></i>
+              </span>
+              <span class="camera-extras">
+                <i class="flash"></i>
+                <i class="lidar"></i>
+              </span>
+            </span>
             <small>手机背面</small>
             <strong id="backStatus">已暂停</strong>
           </div>
