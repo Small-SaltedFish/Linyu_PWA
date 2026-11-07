@@ -59,9 +59,11 @@ export function ScanPage() {
   const [looking, setLooking] = useState(false)
   const [starting, setStarting] = useState(false)
   const [autoFlip, setAutoFlip] = useState(() => readAutoFlipPreference())
-  const [motionState, setMotionState] = useState<'unknown' | 'granted' | 'denied'>('unknown')
+  const [motionState, setMotionState] = useState<'unknown' | 'checking' | 'granted' | 'needed' | 'denied'>('unknown')
   const motionRequestRef = useRef(false)
+  const immediateAttemptRef = useRef(false)
   const needsMotionPermission = autoFlip && motionPermissionRequired()
+  const initialAutoFlipRef = useRef(autoFlip)
 
   const stopCamera = useCallback(() => {
     window.cancelAnimationFrame(rafRef.current)
@@ -251,14 +253,16 @@ export function ScanPage() {
     setPending(device)
   }
 
-  const requestScanMotion = useCallback(async () => {
+  const requestScanMotion = useCallback(async (fromGesture = false) => {
     if (!autoFlip || !motionPermissionRequired() || motionRequestRef.current) return
     motionRequestRef.current = true
+    setMotionState('checking')
     try {
       const ctor = DeviceOrientationEvent as typeof DeviceOrientationEvent & {
         requestPermission?: () => Promise<'granted' | 'denied' | 'default'>
       }
       if (typeof ctor.requestPermission !== 'function') {
+        markMotionPermissionGranted()
         setMotionState('granted')
         return
       }
@@ -266,25 +270,38 @@ export function ScanPage() {
       if (result === 'granted') {
         markMotionPermissionGranted()
         setMotionState('granted')
-      } else {
+      } else if (result === 'denied' && fromGesture) {
         setMotionState('denied')
+      } else {
+        // 自动尝试（无手势）失败时不要标成“已拒绝”，留给用户点一次
+        setMotionState('needed')
       }
     } catch {
-      setMotionState('denied')
+      // 页面刚打开时无用户手势，iOS 可能直接拒绝；此时才显示触摸条让用户点
+      setMotionState(fromGesture ? 'denied' : 'needed')
     } finally {
       motionRequestRef.current = false
     }
   }, [autoFlip])
 
-  // 扫码页打开时如果 cookie 里自动模式是开的，用第一次触摸检查/请求方向权限。
-  // iOS 不允许没有用户手势时弹权限，所以不能直接在 mount 里请求。
+  // 页面打开时先直接尝试一次。导航本身来自一次点击，部分浏览器会保留用户激活，
+  // 能直接成功就不需要二次确认；失败才显示触摸条。
+  useEffect(() => {
+    if (!initialAutoFlipRef.current || !motionPermissionRequired()) return
+    if (immediateAttemptRef.current) return
+    immediateAttemptRef.current = true
+    void requestScanMotion(false)
+  }, [requestScanMotion])
+
+  // 自动请求失败后，第一次触摸页面时再试一次。
   useEffect(() => {
     if (!autoFlip || !motionPermissionRequired() || motionState === 'granted') return
+    if (motionState === 'checking' || motionState === 'unknown') return
     const onFirstPointer = (event: PointerEvent) => {
       const target = event.target as HTMLElement | null
       // 开关自己会走 toggleAutoFlip 的授权流程，避免同一手势请求两次
       if (target?.closest('.scan-auto')) return
-      void requestScanMotion()
+      void requestScanMotion(true)
     }
     document.addEventListener('pointerdown', onFirstPointer, { capture: true })
     return () => document.removeEventListener('pointerdown', onFirstPointer, { capture: true })
@@ -407,13 +424,13 @@ export function ScanPage() {
             <button onClick={submitManual}>识别</button>
           </label>
         </div>
-        {needsMotionPermission && motionState !== 'granted' && (
+        {needsMotionPermission && (motionState === 'needed' || motionState === 'denied') && (
           <div className="scan-permission">
             <span>
               自动翻转需要方向传感器权限
               {motionState === 'denied' ? '，当前已拒绝' : ''}
             </span>
-            <button type="button" onClick={() => void requestScanMotion()}>
+            <button type="button" onClick={() => void requestScanMotion(true)}>
               {motionState === 'denied' ? '重试授权' : '立即授权'}
             </button>
           </div>
