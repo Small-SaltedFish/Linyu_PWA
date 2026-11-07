@@ -15,16 +15,16 @@ const MODE_COPY: Record<InstallGuideMode, { eyebrow: string; steps: { title: str
       eyebrow: 'Safari · 最新版',
       steps: [
         {
-          title: '点地址栏左边的三条横线',
-          text: '最新版 Safari 的页面菜单在链接左边，图标是三条横线；点开后再点「分享」。如果直接看到分享图标，也可以直接点。',
+          title: '点左下角的三条横线',
+          text: '在屏幕左下角、地址栏左边，点三条横线，再点「共享」。',
         },
         {
-          title: '向下滑，点「添加到主屏幕」',
-          text: '如果没看到，滑到最底部点「编辑操作」，把「添加到主屏幕」加回来。',
+          title: '点「查看更多」',
+          text: '在共享菜单里点「查看更多」，展开全部操作。',
         },
         {
-          title: '点右上角「添加」',
-          text: '桌面会出现「淋浴」图标，打开后就是独立窗口，不再有 Safari 地址栏。',
+          title: '点「添加到主屏幕」',
+          text: '向下找到「添加到主屏幕」，再点右上角「添加」。',
         },
       ],
     },
@@ -32,16 +32,16 @@ const MODE_COPY: Record<InstallGuideMode, { eyebrow: string; steps: { title: str
       eyebrow: 'Chrome · iOS',
       steps: [
         {
-          title: '点右上角的分享按钮',
-          text: 'Chrome 在 iPhone 上也可以把网页加到主屏幕。',
+          title: '点右上角的共享按钮',
+          text: '在屏幕右上角、地址栏右边，点共享。',
+        },
+        {
+          title: '点「查看更多」',
+          text: '在共享菜单里点「查看更多」，展开全部操作。',
         },
         {
           title: '点「添加到主屏幕」',
-          text: '在分享菜单里向下找，点击「添加到主屏幕」。',
-        },
-        {
-          title: '点右上角「添加」',
-          text: '桌面会出现「淋浴」图标；如果没有，请先把 Chrome 更新到最新版。',
+          text: '向下找到「添加到主屏幕」，再点右上角「添加」。',
         },
       ],
     },
@@ -67,14 +67,14 @@ const MODE_COPY: Record<InstallGuideMode, { eyebrow: string; steps: { title: str
       steps: [
         {
           title: '点右上角的三个点',
-          text: 'Chrome 的安装入口在右上角菜单里。某些版本会直接显示「安装应用」。',
+          text: '打开 Chrome 右上角的菜单。',
         },
         {
-          title: '点「安装应用」或「添加到主屏幕」',
-          text: '不同 Chrome 版本名称不同。没有「安装应用」时，选「添加到主屏幕」也可以。',
+          title: '下滑，点「安装并创建快捷方式」',
+          text: '在菜单里向下滑，找到「安装并创建快捷方式」。不同版本可能叫「安装应用」。',
         },
         {
-          title: '确认安装',
+          title: '点「安装」',
           text: '完成后桌面会出现「淋浴」图标；从图标打开才是独立 PWA 窗口。',
         },
       ],
@@ -195,6 +195,17 @@ export function InstallGuide({
                 ? '从桌面图标打开后才是独立 PWA；浏览器标签页不算安装。'
                 : '不同浏览器的安装入口名称可能不同，以实际菜单为准。'}
         </p>
+
+        {mode === 'android' && (
+          <div className="safari-guide__trouble">
+            <strong>卡在通知栏「正在安装」？</strong>
+            <p>
+              先下拉通知栏取消，完全关闭 Chrome 再重开；确认 Google Play 服务可用。大陆网络下 WebAPK
+              可能连不上 Google 的安装服务，会一直卡住。可以改用菜单里的「添加到主屏幕」创建快捷方式，
+              或继续在浏览器里使用。
+            </p>
+          </div>
+        )}
       </div>
     </Sheet>
   )
