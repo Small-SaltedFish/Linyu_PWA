@@ -114,7 +114,7 @@ docker compose up -d --build
 
 ### 从镜像启动
 
-GitHub Release `v1.0.0` 发布后：
+GitHub Release `v1.0.0` 已发布：
 
 ```bash
 docker pull ghcr.io/small-saltedfish/linyu-pwa-stats:1.0.0
