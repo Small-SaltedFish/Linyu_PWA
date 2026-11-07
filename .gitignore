@@ -8,5 +8,5 @@ release/
 .DS_Store
 __pycache__/
 *.pyc
-data/
+/server/data/
 *.db
