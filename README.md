@@ -177,6 +177,8 @@ https://stats.example.com → http://127.0.0.1:8787
 - 不额外放 SHA256 校验文件
 - workflow：`.github/workflows/release.yml`，只有推 `v*` tag 才触发
 
+完整版本变化见 [CHANGELOG.md](CHANGELOG.md)。
+
 每次发版同步更新：
 
 - `pwa/package.json`
