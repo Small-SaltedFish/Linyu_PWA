@@ -198,7 +198,7 @@ docker compose up -d --build
 
 ## 已知限制
 
-- 安卓 Chrome / 小米等设备的振动、后台能力差异较大
+- Android / iOS 的后台能力、传感器权限回收策略差异较大
 - iOS 静音键可能压掉音效；Web Audio 在息屏后可能需要一次触摸恢复
 - 自动更新做了 5 分钟单次刷新保护，避免刷新循环
 - 统计后端是最小实现，适合小规模使用；大规模建议换 Postgres / Worker + D1
