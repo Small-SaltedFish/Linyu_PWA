@@ -1,5 +1,15 @@
 # 更新日志
 
+## v1.2.5 · 2026-11-07
+
+### 修正
+
+- 最新版 Safari 的页面菜单改为**链接左边的三条横线**，不再按「三个点」引导。
+- iOS Chrome 也可以从右上角分享 → 添加到主屏幕，引导不再误判为不可安装。
+- 安卓 Chrome 没有拿到 `beforeinstallprompt` 时，改为显示手动安装步骤，而不是只显示「浏览器菜单」。
+- 更早监听 `beforeinstallprompt`，避免事件在 React 挂载前触发导致「一键安装」丢失。
+- 安装引导现在区分 Safari、iOS Chrome、其他 iOS 浏览器和 Android Chrome。
+
 ## v1.2.4 · 2026-11-07
 
 ### 新增
